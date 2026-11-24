@@ -608,3 +608,57 @@ html[data-motion="off"] .steps { --p: 1 !important; }
 .text-link--wa { color: var(--wa); }
 .text-link--wa:hover { color: var(--wa-hover); }
 @media (max-width: 760px) { .btn--wa { width: 100%; } }
+
+/* =====================================================================
+   תיקונים אחרי ביקורת הכללים מהסרטון
+   ===================================================================== */
+/* "להרים רק את מה שחשוב": צל רק לכפתור הראשי */
+.site-header .icon-link[data-wa] { box-shadow: none; }
+.hero__edge { box-shadow: none; }
+.page-head__media { box-shadow: none; }
+/* "כפתור אחד": הוואטסאפ הצף מופיע רק אחרי שהכפתור הראשי יצא מהמסך (בלי JavaScript הוא גלוי תמיד) */
+html.js .wa-float { opacity: 0; transform: translateY(14px); pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease; }
+html.js .wa-float.is-visible { opacity: 1; transform: none; pointer-events: auto; }
+/* כלל המרקר: בלי נגיעת זהב על כריכה שלא לוחצים עליה */
+.recipe-cover {
+  background:
+    radial-gradient(120% 90% at 85% 10%, rgba(244, 236, 225, 0.07), transparent 60%),
+    repeating-linear-gradient(135deg, rgba(244, 236, 225, 0.035) 0 1px, transparent 1px 14px),
+    linear-gradient(160deg, #24201b, #15120f);
+}
+
+/* "רקע, אמצע, חזית" גם בעמודים הפנימיים: צילום אמיתי ברקע הראש, והרשימה "שוברת את הקצה" לתוכו */
+.page-band { position: relative; isolation: isolate; padding-bottom: clamp(80px, 9vw, 120px); }
+.page-band__back { position: absolute; inset: 0; z-index: -2; margin: 0; }
+.page-band__back img { width: 100%; height: 100%; object-fit: cover; }
+.page-band::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background:
+    linear-gradient(to left, rgba(20, 18, 16, 0.96) 0%, rgba(20, 18, 16, 0.88) 45%, rgba(20, 18, 16, 0.6) 100%),
+    linear-gradient(to bottom, rgba(20, 18, 16, 0.55) 0%, transparent 30%, transparent 62%, var(--bg) 100%);
+}
+.page-band .page-head { padding-bottom: 0; }
+.overlap { position: relative; z-index: 2; margin-top: calc(-1 * clamp(56px, 6vw, 84px)); }
+.overlap.section--tight { padding-top: 0; }
+
+/* מבחן המראה בעמוד מוצר בטלפון: השם והכפתור לפני התמונה הגדולה */
+@media (max-width: 900px) {
+  .product { display: flex; flex-direction: column; }
+  .product__info { display: contents; }
+  .product__info > .eyebrow { order: 1; margin-bottom: -10px; }
+  .product__info > h1 { order: 2; margin-bottom: 0; }
+  .product__info > .lead { order: 3; }
+  .product__info > .product__cta { order: 4; }
+  .product__media { order: 5; }
+  .product__info > .product__desc { order: 6; }
+  .product__info > .ticks { order: 7; }
+  .product__info > .product__sub { order: 8; }
+  .product__info > .custom-list { order: 9; }
+  .product__media img { aspect-ratio: 4 / 3; }
+}
+@media (max-width: 760px) {
+  .page-band::before { background: linear-gradient(to bottom, rgba(20, 18, 16, 0.72), rgba(20, 18, 16, 0.86) 60%, var(--bg)); }
+}
+
+/* הכפתור הצף מופיע ונעלם מיד, בלי החלקה: כך במסך עם הרצועה המונפשת רק דבר אחד זז */
+html.js .wa-float, html.js .wa-float.is-visible { transition: none; transform: none; }

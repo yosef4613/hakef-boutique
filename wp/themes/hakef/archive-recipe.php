@@ -17,14 +17,17 @@ hakef_set_head( array(
 	'ld'        => array( $crumbs_ld, array( '@context' => 'https://schema.org', '@type' => 'ItemList', 'name' => 'מתכונים', 'itemListElement' => $items ) ),
 ) );
 get_header();
-echo $crumbs; // phpcs:ignore
 ?>
-  <section class="page-head container">
-    <p class="eyebrow">מתכונים</p>
-    <h1>מתכונים מהמטבח של <?php echo esc_html( HAKEF_SITE['name'] ); ?></h1>
-    <p class="lead">מתכונים ביתיים לעוגות, עוגיות וקינוחים, צעד אחר צעד. ואם אין זמן לאפות, אנחנו כאן.</p>
+  <section class="page-band">
+    <figure class="page-band__back" aria-hidden="true"><img src="<?php echo esc_url( home_url( '/assets/img/rec-coffee-nougat-1200.webp' ) ); ?>" width="1600" height="1196" alt="" fetchpriority="high" decoding="async"></figure>
+    <?php echo $crumbs; // phpcs:ignore ?>
+    <section class="page-head container">
+      <p class="eyebrow">מתכונים</p>
+      <h1>מתכונים מהמטבח של <?php echo esc_html( HAKEF_SITE['name'] ); ?></h1>
+      <p class="lead">מתכונים ביתיים לעוגות, עוגיות וקינוחים, צעד אחר צעד. ואם אין זמן לאפות, אנחנו כאן.</p>
+    </section>
   </section>
-  <section class="container section--tight" aria-label="רשימת המתכונים">
+  <section class="container section--tight overlap" aria-label="רשימת המתכונים">
     <?php if ( have_posts() ) : ?>
     <div class="r-grid">
       <?php

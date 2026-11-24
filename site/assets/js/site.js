@@ -64,33 +64,48 @@
     });
   }
 
-  /* ---------- כפתור דביק בטלפון: מופיע אחרי המסך הראשון, נעלם ליד המתכנן ---------- */
+  /* ---------- כפתורים צפים (פס בטלפון, וואטסאפ צף במחשב) ----------
+     מופיעים רק אחרי שהכפתור הראשי של העמוד יצא מהמסך, כדי שבמסך הראשון תהיה פעולה בולטת אחת (כלל "כפתור אחד").
+     בעמוד בלי כפתור ראשי הם מופיעים מיד. ליד המתכנן הם נעלמים, כי שם יש כבר כפתור שליחה. */
   var mobileCta = $('[data-mobile-cta]');
-  var heroAction = $('.hero__action');
+  var waFloat = $('.wa-float');
+  var mainAction = $('.hero__action') || $('.page-head .btn') || $('.product__cta') || $('.contact-card .btn');
   var planSection = $('#plan');
-  var heroGone = false, planVisible = false;
-  function updateMobileCta() {
-    if (!mobileCta) return;
-    var show = heroGone && !planVisible;
-    mobileCta.classList.toggle('is-visible', show);
-    mobileCta.setAttribute('aria-hidden', show ? 'false' : 'true');
-    $$('a', mobileCta).forEach(function (a) { a.tabIndex = show ? 0 : -1; });
+  var mainGone = !mainAction, planVisible = false;
+  function setFloating(el, show) {
+    if (!el) return;
+    el.classList.toggle('is-visible', show);
+    el.setAttribute('aria-hidden', show ? 'false' : 'true');
+    (el.tagName === 'A' ? [el] : $$('a', el)).forEach(function (a) { a.tabIndex = show ? 0 : -1; });
+  }
+  function updateFloating() {
+    var show = mainGone && !planVisible;
+    setFloating(mobileCta, show);
+    setFloating(waFloat, show);
   }
   if ('IntersectionObserver' in window) {
-    if (heroAction) new IntersectionObserver(function (e) { heroGone = !e[0].isIntersecting && e[0].boundingClientRect.top < 0; updateMobileCta(); }).observe(heroAction);
-    if (planSection) new IntersectionObserver(function (e) { planVisible = e[0].isIntersecting; updateMobileCta(); }, { rootMargin: '0px 0px -30% 0px' }).observe(planSection);
+    if (mainAction) new IntersectionObserver(function (e) { mainGone = !e[0].isIntersecting && e[0].boundingClientRect.top < 0; updateFloating(); }).observe(mainAction);
+    if (planSection) new IntersectionObserver(function (e) { planVisible = e[0].isIntersecting; updateFloating(); }, { rootMargin: '0px 0px -30% 0px' }).observe(planSection);
+  } else {
+    mainGone = true;
   }
+  updateFloating();
 
   /* ---------- 1) הבר: כרטיסים נערמים. הכרטיס שמתכסה נסוג מעט ---------- */
   var stackCards = $$('[data-stack] .stack__card');
   function updateStack() {
     if (!motionOn()) { stackCards.forEach(function (c) { c.style.removeProperty('--cover'); }); return; }
     for (var i = 0; i < stackCards.length - 1; i++) {
-      var cur = stackCards[i].getBoundingClientRect();
+      var el = stackCards[i];
+      var cur = el.getBoundingClientRect();
       var next = stackCards[i + 1].getBoundingClientRect();
-      var p = 1 - (next.top - cur.top) / Math.max(cur.height, 1);
+      // רק כרטיס שכבר נעוץ למעלה מתכסה ונסוג. כך בכל רגע זז דבר אחד: הכרטיס שנכנס.
+      var stuck = cur.top <= (parseFloat(getComputedStyle(el).top) || 0) + 1;
+      var nextStuck = next.top <= (parseFloat(getComputedStyle(stackCards[i + 1]).top) || 0) + 1;
+      // כרטיס שכבר כוסה לגמרי ננעל, כדי שבסוף הערימה לא ישתנו כמה כרטיסים יחד
+      var p = !stuck ? 0 : nextStuck ? 1 : 1 - (next.top - cur.top) / Math.max(cur.height, 1);
       p = Math.min(1, Math.max(0, p));
-      stackCards[i].style.setProperty('--cover', p.toFixed(3));
+      el.style.setProperty('--cover', p.toFixed(3));
     }
   }
 

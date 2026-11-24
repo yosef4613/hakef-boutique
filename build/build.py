@@ -309,6 +309,13 @@ def product_grid(root, items, heading='h3'):
     return '<div class="p-grid">\n        ' + '\n        '.join(product_card(root, p, heading) for p in items) + '\n      </div>'
 
 
+def page_band(root, back, crumbs, head_html):
+    """ראש עמוד בשלוש שכבות: צילום אמיתי ברקע, הטקסט באמצע, הכפתור בחזית."""
+    key, w, h = back
+    return (f'<section class="page-band">\n  <figure class="page-band__back" aria-hidden="true">'
+            f'{img(root, key, w, h, "", "100vw", lazy=False)}</figure>\n  {crumbs}\n{head_html}\n  </section>')
+
+
 def cta_band(root, title, text, label='לתכנון הבר והצעת מחיר', href=None):
     href = href or f'{root}#plan'
     return f'''<section class="cta-band">
@@ -370,13 +377,13 @@ def build_shop(products):
       <div class="shop-cat__head"><h2 id="s-{esc(c["slug"])}">{c["name"]}</h2><a class="text-link" href="{root}product-category/{c["slug"]}/">לעמוד {c["name"]} ←</a></div>
       {product_grid(root, items)}
     </section>''')
-    body = f'''{crumbs}
-  <section class="page-head container">
+    head = '''  <section class="page-head container">
     <p class="eyebrow">הקטלוג</p>
     <h1>כל המוצרים: בר קינוחים, פטיפורים, עוגות מעוצבות ומארזים</h1>
     <p class="lead">כל מה שאפשר להזמין לאירוע, בהזמנה אישית ובטריות מלאה. בוחרים מה מתאים, שולחים הודעה, ומקבלים הצעת מחיר.</p>
-  </section>
-  <div class="container shop">
+  </section>'''
+    body = f'''{page_band(root, ("hero-petitfours", 1600, 1066), crumbs, head)}
+  <div class="container shop overlap">
     {"".join(sections)}
   </div>
   {cta_band(root, "לא בטוחים מה לבחור?", "ספרו לנו על האירוע, ונרכיב איתכם את ההזמנה המתאימה.")}'''
@@ -395,14 +402,14 @@ def build_category(c, products):
     others = ' '.join(f'<a class="chip-link" href="{root}product-category/{o["slug"]}/">{o["name"]}</a>' for o in CATEGORIES if o is not c)
     intro = ''.join(f'<p>{esc(t)}</p>' for t in c['intro'])
     faq, faq_ld = faq_block([FAQ_GENERAL[0], FAQ_GENERAL[3], FAQ_GENERAL[2], FAQ_GENERAL[6]], 'מה חשוב לדעת לפני שמזמינים')
-    body = f'''{crumbs}
-  <section class="page-head container">
+    head = f'''  <section class="page-head container">
     <p class="eyebrow">{c["name"]} · {SITE["area"]}</p>
     <h1>{c["h1"]}</h1>
     <div class="page-head__intro">{intro}</div>
     <a class="btn btn--wa" href="{wa("שלום, אשמח לקבל הצעת מחיר על " + c["name"])}" target="_blank" rel="noopener" data-wa>{WA_ICON} לקבלת הצעת מחיר בוואטסאפ</a>
-  </section>
-  <section class="container section--tight" aria-label="{c["name"]}">
+  </section>'''
+    body = f'''{page_band(root, (c["img"], c["w"], c["h"]), crumbs, head)}
+  <section class="container section--tight overlap" aria-label="{c["name"]}">
     {product_grid(root, items, 'h2')}
     <p class="also">עוד בקטלוג: {others}</p>
   </section>
@@ -432,16 +439,16 @@ def build_product(p, products):
       <p class="eyebrow">{cat["name"]}</p>
       <h1>{esc(p["name"])}</h1>
       <p class="lead">{esc(p["short"])}</p>
+      <div class="product__cta">
+        <a class="btn btn--wa" href="{wa(msg)}" target="_blank" rel="noopener" data-wa>{WA_ICON} לקבלת הצעת מחיר בוואטסאפ</a>
+        <p class="micro">או <a class="text-link" href="{root}#plan">תכננו בר קינוחים שלם במתכנן</a></p>
+      </div>
       <div class="product__desc">{desc_html}</div>
       <ul class="ticks" aria-label="פרטים">
         <li>בהזמנה אישית</li><li>כשרות מהודרת</li><li>{SITE["area"]}</li>
       </ul>
       <h2 class="product__sub">מה אפשר להתאים</h2>
       <ul class="custom-list"><li>טעמים</li><li>צבעים ועיצוב</li><li>כיתוב או שם</li><li>כמות וגודל</li></ul>
-      <div class="product__cta">
-        <a class="btn btn--wa" href="{wa(msg)}" target="_blank" rel="noopener" data-wa>{WA_ICON} לקבלת הצעת מחיר בוואטסאפ</a>
-        <p class="micro">או <a class="text-link" href="{root}#plan">תכננו בר קינוחים שלם במתכנן</a></p>
-      </div>
     </div>
   </section>
   <section class="related container section--tight" aria-labelledby="rel-title">
@@ -523,14 +530,15 @@ def build_bar_page(products):
            body, extra_ld=[crumbs_ld, service, faq_ld], og_img='ev-bar-full-1200.webp')
 
 
-def simple_page(path, title, desc, h1, eyebrow, inner, crumbs_name):
+def simple_page(path, title, desc, h1, eyebrow, inner, crumbs_name, back=None):
     root = '../' * len([x for x in path.split('/') if x])
     crumbs, crumbs_ld = breadcrumbs(root, [(crumbs_name, None)])
-    body = f'''{crumbs}
-  <section class="page-head container">
+    head = f'''  <section class="page-head container">
     <p class="eyebrow">{eyebrow}</p>
     <h1>{h1}</h1>
-  </section>
+  </section>'''
+    top = page_band(root, back, crumbs, head) if back else crumbs + '\n' + head
+    body = f'''{top}
   <div class="container prose">
 {inner.replace("{root}", root)}
   </div>'''
@@ -550,7 +558,8 @@ def build_static_pages():
       <li>התאמה אישית: טעמים, צבעים, עיצוב וכיתוב.</li>
       <li>כשרות מהודרת.</li>
     </ul>
-    <p><a class="btn btn--primary" href="{root}#plan" data-order="bar">לתכנון הבר והצעת מחיר <span aria-hidden="true">←</span></a></p>''', 'אודות')
+    <p><a class="btn btn--primary" href="{root}#plan" data-order="bar">לתכנון הבר והצעת מחיר <span aria-hidden="true">←</span></a></p>''', 'אודות',
+                back=('ev-platter-wide', 1600, 1200))
 
     simple_page('contact/', 'צור קשר | הזמנות והצעות מחיר בוואטסאפ | הכיף שבאפיה',
                 'להזמנת בר קינוחים, מגשי פטיפורים ועוגות מעוצבות: וואטסאפ 050-915-3197. ירושלים והסביבה.',
@@ -563,7 +572,7 @@ def build_static_pages():
         <h2>מייל</h2><p><a class="text-link" href="mailto:{SITE["email"]}">{SITE["email"]}</a></p></div>
       <div class="contact-card"><h2>אזור שירות</h2><p>{SITE["area"]}. משלוח מגשים או הקמת בר קינוחים במקום האירוע.</p>
         <p><a class="text-link" href="{{root}}#plan">רוצים הערכה מהירה? מתכנן הבר ←</a></p></div>
-    </div>''', 'צור קשר')
+    </div>''', 'צור קשר', back=('ev-bar-full', 1600, 1200))
 
     simple_page('הצהרת-נגישות/', 'הצהרת נגישות | הכיף שבאפיה',
                 'הצהרת הנגישות של אתר הכיף שבאפיה: התאמות הנגישות באתר ודרכי פנייה בנושא נגישות.',
@@ -716,13 +725,13 @@ def build_recipes_preview():
     root = '../'
     crumbs, crumbs_ld = breadcrumbs(root, [('מתכונים', None)])
     cards = '\n      '.join(recipe_card(root, r) for r in recipes)
-    body = f"""{crumbs}
-  <section class="page-head container">
+    head = f'''  <section class="page-head container">
     <p class="eyebrow">מתכונים</p>
     <h1>מתכונים מהמטבח של {SITE["name"]}</h1>
     <p class="lead">מתכונים ביתיים לעוגות, עוגיות וקינוחים, צעד אחר צעד. ואם אין זמן לאפות, אנחנו כאן.</p>
-  </section>
-  <section class="container section--tight" aria-label="רשימת המתכונים">
+  </section>'''
+    body = f"""{page_band(root, ("rec-coffee-nougat", 1600, 1196), crumbs, head)}
+  <section class="container section--tight overlap" aria-label="רשימת המתכונים">
     <div class="r-grid">
       {cards}
     </div>
