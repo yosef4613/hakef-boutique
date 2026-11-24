@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
 
 Sitemap: https://hakef.com/sitemap.xml
+Sitemap: https://hakef.com/wp-sitemap.xml

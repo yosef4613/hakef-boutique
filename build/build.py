@@ -61,7 +61,7 @@ CAT_BY_SLUG = {c['slug']: c for c in CATEGORIES}
 
 NAV = [('בר קינוחים', 'בר-קינוחים-לאירועים/'), ('עוגות', 'product-category/עוגות/'),
        ('פטיפורים', 'product-category/פטיפורים/'), ('כל המוצרים', 'shop/'),
-       ('אודות', 'about/'), ('צור קשר', 'contact/')]
+       ('מתכונים', 'מתכונים/'), ('אודות', 'about/'), ('צור קשר', 'contact/')]
 
 PAGES_FOR_SITEMAP = []
 
@@ -139,27 +139,23 @@ WA_ICON = '<svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><p
 
 
 # ---------------------------------------------------------------- שלד עמוד
-def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=''):
+def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload='',
+           root_override=None, head_override=None, write=True):
     depth = len([p for p in path.split('/') if p])
-    root = '../' * depth
+    root = root_override if root_override is not None else '../' * depth
     canonical = abs_url(path)
-    PAGES_FOR_SITEMAP.append(canonical)
+    if write:
+        PAGES_FOR_SITEMAP.append(canonical)
     robots = '' if PRODUCTION else '<meta name="robots" content="noindex">\n'
     lds = '\n'.join(jsonld(x) for x in extra_ld)
     nav_items = '\n'.join(
         f'        <li><a href="{root}{p}"{" aria-current=\"page\"" if p == path else ""}>{n}</a></li>' for n, p in NAV)
     og_abs = SITE['url'] + '/assets/img/' + urllib.parse.quote(og_img)
-    plan = f'{root}#plan' if depth else '#plan'
+    plan = f'{root}#plan' if (depth or root_override) else '#plan'
     cat_links = '\n'.join(f'          <li><a href="{root}product-category/{c["slug"]}/">{c["name"]}</a></li>' for c in CATEGORIES)
-    doc = f'''<!doctype html>
-<html lang="he" dir="rtl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>{esc(title)}</title>
+    meta_block = f'''<title>{esc(title)}</title>
 <meta name="description" content="{esc(desc)}">
 {robots}<link rel="canonical" href="{canonical}">
-<meta name="theme-color" content="#141210">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="he_IL">
 <meta property="og:site_name" content="{SITE['name']}">
@@ -167,7 +163,16 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
 <meta property="og:description" content="{esc(desc)}">
 <meta property="og:url" content="{canonical}">
 <meta property="og:image" content="{og_abs}">
-<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:card" content="summary_large_image">'''
+    if head_override is not None:
+        meta_block, lds = head_override, ''
+    doc = f'''<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#141210">
+{meta_block}
 <link rel="icon" href="{root}assets/img/logo-120.png">
 <link rel="apple-touch-icon" href="{root}assets/img/logo-240.png">
 <link rel="preload" href="{root}assets/fonts/FrankRuhlLibre-hebrew.woff2" as="font" type="font/woff2" crossorigin>
@@ -246,6 +251,7 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
     <div>
       <h2 class="footer__title">מידע</h2>
       <ul class="footer__list footer__list--plain">
+        <li><a href="{root}מתכונים/">מתכונים</a></li>
         <li><a href="{root}about/">אודות</a></li>
         <li><a href="{root}contact/">צור קשר</a></li>
         <li><a href="{root}הצהרת-נגישות/">הצהרת נגישות</a></li>
@@ -270,6 +276,8 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
 </body>
 </html>
 '''
+    if not write:
+        return doc
     out = os.path.join(OUT, path, 'index.html') if path else os.path.join(OUT, 'index.html')
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(out, 'w', encoding='utf-8') as f:
@@ -601,33 +609,42 @@ def build_sitemap_robots():
     open(os.path.join(OUT, 'sitemap.xml'), 'w', encoding='utf-8').write(
         f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}\n</urlset>\n')
     open(os.path.join(OUT, 'robots.txt'), 'w', encoding='utf-8').write(
-        f'User-agent: *\nAllow: /\n\nSitemap: {SITE["url"]}/sitemap.xml\n')
+        f'User-agent: *\nAllow: /\nDisallow: /wp-admin/\nAllow: /wp-admin/admin-ajax.php\n\nSitemap: {SITE["url"]}/sitemap.xml\nSitemap: {SITE["url"]}/wp-sitemap.xml\n')
 
 
 def build_htaccess():
     """הפניות 301 מהכתובות הישנות (וורדפרס) לחדשות, לשימור הדירוג בגוגל."""
     raw_products = ['מיזרה-צבעוני-200-גרם', 'שמבלות', 'קליק-מטאלי', 'סוכר-נצנצ-לקישוט', 'פניני-קראנצ-חלבי', 'גליליות-מיני',
                     'קרם-פסק-זמן', 'קרם-נוגט', 'קרם-וניל', 'קרם-קינדר-פרווה', 'מארז-קישוטים-לילדים', 'נשיקות-ממותגות']
+    recipes = json.load(open(os.path.join(ROOT, 'build', 'data', 'recipes.json'), encoding='utf-8'))
     rules = [
         ('product-category/(כללי|שוקולד|קרמים-ומליות|קישוטים-אכילים)/?.*', 'shop/'),
         ('product-category/עוגות/(עוגות-בהזמנה|עוגות-מוס)/?', 'product-category/עוגות/'),
         ('product-category/פטיפורים/(קינוחים-אישיים|פאים-אישיים)/?', 'product-category/פטיפורים/'),
         ('product-tag/.*', 'shop/'),
-        ('(מתכונים|recipes)/?', ''),
-        ('(סורבה-מנגו-אננס-בקישוט-פסיפלורה|עוגיות-שוקולדציפס-נוגט|עוגת-קפה-נוגט|שוקלד-קרנץ|מוס-שוקולד|elementor-942|עוגת-גבינה)/?', ''),
+        ('recipes/?', 'מתכונים/'),
+        ('שוקלד-קרנץ/?', 'מתכונים/'),
         ('(מדיניות-החזרים|cart|checkout|my-account)/?.*', 'contact/'),
         ('(category|tag|author|20[0-9][0-9])/.*', ''),
-    ] + [(f'product/{s}/?', 'shop/') for s in raw_products]
-    lines = ['# הכיף שבאפיה: נוצר אוטומטית על ידי build/build.py', 'Options -MultiViews', 'DirectoryIndex index.html',
-             'ErrorDocument 404 /404.html', 'RewriteEngine On',
+    ] + [(f'{o}/?', f'מתכונים/{r["slug"]}/') for r in recipes for o in r['old']] \
+      + [(f'product/{s}/?', 'shop/') for s in raw_products]
+    lines = ['# הכיף שבאפיה: נוצר אוטומטית על ידי build/build.py',
+             '# האתר עצמו הוא קבצים סטטיים. וורדפרס נשאר רק לממשק הניהול ולעמודי המתכונים.',
+             'Options -MultiViews', 'DirectoryIndex index.html index.php',
+             'ErrorDocument 404 /404.html', 'RewriteEngine On', 'RewriteBase /',
              '# HTTPS ובלי www', 'RewriteCond %{HTTPS} !=on [OR]', 'RewriteCond %{HTTP_HOST} ^www\\. [NC]',
              'RewriteRule ^(.*)$ https://hakef.com/$1 [R=301,L,NE]',
+             '# אבטחה: חסימת xmlrpc', 'RewriteRule ^xmlrpc\\.php$ - [F,L]',
              '# כתובות ישנות']
     for src, dst in rules:
         lines.append(f'RewriteRule ^{src}$ /{dst} [R=301,L,NE]')
-    lines += ['# וורדפרס ישן: לא קיים יותר', 'RewriteRule ^(wp-admin|wp-login\\.php|xmlrpc\\.php|feed)(/.*)?$ / [R=301,L]',
+    lines += ['# וורדפרס: כל מה שאינו קובץ או תיקייה קיימים (המתכונים, ממשק הניהול)',
+              'RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]',
+              'RewriteRule ^index\\.php$ - [L]', 'RewriteCond %{REQUEST_FILENAME} !-f', 'RewriteCond %{REQUEST_FILENAME} !-d',
+              'RewriteRule . /index.php [L]',
               '', '<IfModule mod_expires.c>', '  ExpiresActive On',
-              '  ExpiresByType image/webp "access plus 1 year"', '  ExpiresByType font/woff2 "access plus 1 year"',
+              '  ExpiresByType image/webp "access plus 1 year"', '  ExpiresByType image/jpeg "access plus 1 year"', '  ExpiresByType image/png "access plus 1 year"',
+              '  ExpiresByType font/woff2 "access plus 1 year"',
               '  ExpiresByType text/css "access plus 1 week"', '  ExpiresByType application/javascript "access plus 1 week"',
               '  ExpiresByType text/html "access plus 0 seconds"', '</IfModule>',
               '<IfModule mod_deflate.c>', '  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/xml', '</IfModule>',
@@ -636,6 +653,136 @@ def build_htaccess():
     os.makedirs(os.path.join(ROOT, 'deploy'), exist_ok=True)
     open(os.path.join(ROOT, 'deploy', '.htaccess'), 'w', encoding='utf-8').write('\n'.join(lines))
 
+
+
+# ---------------------------------------------------------------- תבנית וורדפרס (מתכונים)
+def build_wp_theme():
+    """כותרת ותחתית לתבנית הוורדפרס, מאותו שלד של שאר האתר (נתיבים מוחלטים מהשורש)."""
+    doc = layout('', '', '', '%%BODY%%', root_override='/', head_override='<?php hakef_head_meta(); ?>', write=False)
+    doc = doc.replace('</head>', '<?php wp_head(); ?>\n</head>', 1)
+    doc = doc.replace('<body>', '<body <?php body_class(); ?>>\n<?php wp_body_open(); ?>', 1)
+    doc = doc.replace('</body>', '<?php wp_footer(); ?>\n</body>', 1)
+    top, bottom = doc.split('%%BODY%%')
+    theme = os.path.join(ROOT, 'wp', 'themes', 'hakef')
+    note = '<?php /* נוצר אוטומטית על ידי build/build.py. לא לערוך ידנית. */ defined( \'ABSPATH\' ) || exit; ?>\n'
+    open(os.path.join(theme, 'header.php'), 'w', encoding='utf-8').write(note + top)
+    open(os.path.join(theme, 'footer.php'), 'w', encoding='utf-8').write(note + bottom)
+    seed = os.path.join(ROOT, 'wp', 'mu-plugins', 'hakef-seed')
+    os.makedirs(seed, exist_ok=True)
+    import shutil
+    shutil.copy(os.path.join(ROOT, 'build', 'data', 'recipes.json'), os.path.join(seed, 'recipes.json'))
+
+
+# ---------------------------------------------------------------- מתכונים בתצוגה המקדימה (באתר האמיתי וורדפרס מציג אותם)
+def parse_lines(text):
+    out = []
+    for line in (text or '').splitlines():
+        line = re.sub(r'^\s*(?:[-*•·]|\d+[.)])\s*', '', line).strip()
+        if not line:
+            continue
+        if re.search(r'[:：]\s*$', line):
+            out.append(('heading', line.rstrip(':： \t')))
+        else:
+            out.append(('item', line))
+    return out
+
+
+def recipe_cover(title):
+    return (f'<div class="recipe-cover" aria-hidden="true"><span class="recipe-cover__brand">{SITE["name"]} · מתכון</span>'
+            f'<span class="recipe-cover__title">{esc(title)}</span></div>')
+
+
+def recipe_card(root, r, heading='h2'):
+    meta = f'<span class="r-card__meta">{esc(r["time"])}</span>' if r.get('time') else ''
+    return (f'<article class="r-card"><a href="{root}מתכונים/{r["slug"]}/">{recipe_cover(r["title"])}'
+            f'<{heading} class="r-card__name">{esc(r["title"])}</{heading}><p class="r-card__text">{esc(r["summary"])}</p>{meta}</a></article>')
+
+
+def cta_recipes(root):
+    return (f'<section class="cta-band"><div class="container cta-band__inner"><div><h2>אין זמן לאפות?</h2>'
+            f'<p>בר קינוחים, מגשי פטיפורים ועוגות מעוצבות לאירוע שלכם, טריים ובהזמנה אישית. ירושלים והסביבה.</p></div>'
+            f'<a class="btn btn--primary" href="{root}#plan" data-order="bar">לתכנון הבר והצעת מחיר <span aria-hidden="true">←</span></a></div></section>')
+
+
+def build_recipes_preview():
+    recipes = json.load(open(os.path.join(ROOT, 'build', 'data', 'recipes.json'), encoding='utf-8'))
+    root = '../'
+    crumbs, crumbs_ld = breadcrumbs(root, [('מתכונים', None)])
+    cards = '\n      '.join(recipe_card(root, r) for r in recipes)
+    body = f"""{crumbs}
+  <section class="page-head container">
+    <p class="eyebrow">מתכונים</p>
+    <h1>מתכונים מהמטבח של {SITE["name"]}</h1>
+    <p class="lead">מתכונים ביתיים לעוגות, עוגיות וקינוחים, צעד אחר צעד. ואם אין זמן לאפות, אנחנו כאן.</p>
+  </section>
+  <section class="container section--tight" aria-label="רשימת המתכונים">
+    <div class="r-grid">
+      {cards}
+    </div>
+  </section>
+  {cta_recipes(root)}"""
+    layout('מתכונים/', f'מתכונים לעוגות, עוגיות וקינוחים | {SITE["name"]}',
+           'מתכונים ביתיים לעוגות, עוגיות וקינוחים מהמטבח של הכיף שבאפיה: מצרכים ואופן הכנה, צעד אחר צעד.',
+           body, extra_ld=[crumbs_ld])
+    for r in recipes:
+        path = f'מתכונים/{r["slug"]}/'
+        root = '../../'
+        crumbs, crumbs_ld = breadcrumbs(root, [('מתכונים', 'מתכונים/'), (r['title'], None)])
+        ings, steps = parse_lines(r['ingredients']), parse_lines(r['steps'])
+        n_ings = sum(1 for t, _ in ings if t == 'item')
+        ing_html, open_ = '', False
+        for t, x in ings:
+            if t == 'heading':
+                ing_html += ('</ul>' if open_ else '') + f'<h3>{esc(x)}</h3><ul class="checklist">'
+                open_ = True
+                continue
+            if not open_:
+                ing_html += '<ul class="checklist">'
+                open_ = True
+            ing_html += f'<li><label><input type="checkbox"><span>{esc(x)}</span></label></li>'
+        ing_html += '</ul>' if open_ else ''
+        st_html, open_, n = '', False, 0
+        for t, x in steps:
+            if t == 'heading':
+                st_html += ('</ol>' if open_ else '') + f'<h3>{esc(x)}</h3><ol class="steps-list" start="{n + 1}">'
+                open_ = True
+                continue
+            if not open_:
+                st_html += '<ol class="steps-list">'
+                open_ = True
+            n += 1
+            st_html += f'<li><span class="steps-num" aria-hidden="true">{n}</span>{esc(x)}</li>'
+        st_html += '</ol>' if open_ else ''
+        facts = ''.join(f'<li><span>{lbl}</span><strong>{esc(v)}</strong></li>' for lbl, v in
+                        (('זמן הכנה', r.get('time')), ('כמות', r.get('yield')), ('מצרכים', str(n_ings) if n_ings else '')) if v)
+        tip = f'<aside class="recipe__tip"><strong>טיפ מהמטבח</strong><p>{esc(r["tip"])}</p></aside>' if r.get('tip') else ''
+        more = '\n'.join([recipe_card(root, o, 'h3') for o in recipes if o is not r][:3])
+        body = f"""{crumbs}
+  <article class="recipe container">
+    <header class="recipe__head">
+      <p class="eyebrow">מתכון מהמטבח של {SITE["name"]}</p>
+      <h1>{esc(r["title"])}</h1>
+      <p class="lead">{esc(r["summary"])}</p>
+      <ul class="recipe__facts">{facts}</ul>
+      <button class="text-link recipe__print" type="button" data-print>הדפסת המתכון</button>
+    </header>
+    <figure class="recipe__media">{recipe_cover(r["title"])}</figure>
+    <div class="recipe__body">
+      <section class="recipe__ingredients" aria-labelledby="ing-t"><h2 id="ing-t">מצרכים</h2>{ing_html}</section>
+      <section class="recipe__steps" aria-labelledby="steps-t"><h2 id="steps-t">אופן ההכנה</h2>{st_html}</section>
+    </div>
+    {tip}
+  </article>
+  {cta_recipes(root)}
+  <section class="container section--tight" aria-labelledby="more-t"><h2 id="more-t" class="related__title">עוד מתכונים</h2><div class="r-grid">{more}</div></section>"""
+        rec_ld = {'@context': 'https://schema.org', '@type': 'Recipe', 'name': r['title'], 'description': r['summary'],
+                  'author': {'@type': 'Organization', 'name': SITE['name']}, 'recipeCategory': 'קינוחים', 'inLanguage': 'he',
+                  'recipeIngredient': [x for t, x in ings if t == 'item'],
+                  'recipeInstructions': [{'@type': 'HowToStep', 'text': x} for t, x in steps if t == 'item']}
+        if r.get('yield'):
+            rec_ld['recipeYield'] = r['yield']
+        layout(path, f'{r["title"]} – מתכון | {SITE["name"]}', (r['summary'] + ' מצרכים ואופן הכנה, צעד אחר צעד.')[:160],
+               body, extra_ld=[crumbs_ld, rec_ld])
 
 def main():
     products = json.load(open(os.path.join(ROOT, 'build', 'data', 'products.json'), encoding='utf-8'))
@@ -648,8 +795,11 @@ def main():
     build_bar_page(products)
     build_static_pages()
     build_404()
+    if not PRODUCTION:
+        build_recipes_preview()   # באתר האמיתי וורדפרס מציג את המתכונים
     build_sitemap_robots()
     build_htaccess()
+    build_wp_theme()
     if OUT != SRC_SITE:
         import shutil
         shutil.copytree(os.path.join(SRC_SITE, 'assets'), os.path.join(OUT, 'assets'), dirs_exist_ok=True)
