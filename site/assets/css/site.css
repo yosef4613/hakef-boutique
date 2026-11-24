@@ -15,11 +15,11 @@
   --accent: #d8b57a;      /* 10% — לחיצות בלבד */
   --accent-hover: #e8c993;
   --accent-ink: #1b140c;
-  --header-h: 72px;
+  --header-h: 84px;
   --radius: 18px;
   --gutter: clamp(16px, 4vw, 48px);
-  --font-display: "Bona Nova", "Times New Roman", serif;
-  --font-body: "Heebo", "Segoe UI", Arial, sans-serif;
+  --font-display: "Playpen Sans Hebrew", "Fredoka", "Segoe UI", sans-serif;   /* כתב יד עגול, כמו הלוגו */
+  --font-body: "Fredoka", "Segoe UI", Arial, sans-serif;                        /* עגול ונקי, כמו הסלוגן */
   color-scheme: dark;
 }
 
@@ -39,7 +39,7 @@ body {
 }
 img { max-width: 100%; height: auto; display: block; }
 a { color: inherit; }
-h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 400; line-height: 1.12; margin: 0; letter-spacing: -0.01em; }
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 600; line-height: 1.18; margin: 0; }
 p { margin: 0; }
 button, input, textarea, select { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
@@ -78,12 +78,14 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .site-header.is-solid { background: rgba(20, 18, 16, 0.9); border-bottom-color: var(--line); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
 .site-header__row { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-.brand__mark { width: 48px; height: 48px; border-radius: 50%; background: #fff; display: grid; place-items: center; padding: 6px; flex: none; overflow: hidden; }
-.brand__mark img { width: 100%; height: 100%; object-fit: contain; }
-.brand__mark--lg { width: 96px; height: 96px; padding: 12px; }
 .brand__text { display: flex; flex-direction: column; line-height: 1.15; }
-.brand__text strong { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; white-space: nowrap; }
-.brand__text small { color: var(--ink-3); font-size: 0.8rem; letter-spacing: 0.04em; white-space: nowrap; }
+.brand__logo { height: 66px; width: auto; display: block; }
+.site-header.has-hero-logo .brand { transition: opacity .35s ease, visibility .35s; }
+.site-header.has-hero-logo:not(.show-logo) .brand { opacity: 0; visibility: hidden; }
+html[data-motion="off"] .site-header.has-hero-logo .brand { transition: none; }
+.hero__logo { width: clamp(170px, 15vw, 220px); height: auto; display: block; margin: 0 -8px 10px 0; filter: drop-shadow(0 6px 22px rgba(0,0,0,.45)); }
+.footer__logo { width: 200px; height: auto; display: block; margin-bottom: 18px; }
+.brand__text small { display: block; color: var(--ink-3); font-size: 0.82rem; line-height: 1.3; letter-spacing: 0.03em; white-space: nowrap; }
 .main-nav ul { list-style: none; display: flex; gap: clamp(16px, 2.4vw, 36px); margin: 0; padding: 0; }
 .main-nav a { text-decoration: none; color: var(--ink-2); font-size: 1rem; padding: 6px 0; border-bottom: 1px solid transparent; white-space: nowrap; }
 .main-nav a:hover { color: var(--ink); border-bottom-color: var(--ink-3); }
@@ -113,7 +115,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
   position: relative; isolation: isolate;
   min-height: min(100svh, 880px);
   display: flex; align-items: center;
-  padding-block: calc(var(--header-h) + 56px) 140px;
+  padding-block: calc(var(--header-h) + 28px) 140px;
 }
 .hero__back { position: absolute; inset: 0; z-index: -2; }
 .hero__back img { width: 100%; height: 100%; object-fit: cover; object-position: 30% 50%; }
@@ -123,8 +125,8 @@ button, input, textarea, select { font: inherit; color: inherit; }
     linear-gradient(to left, rgba(20,18,16,0.97) 0%, rgba(20,18,16,0.9) 34%, rgba(20,18,16,0.45) 64%, rgba(20,18,16,0.2) 100%),
     linear-gradient(to bottom, rgba(20,18,16,0.5) 0%, transparent 22%, transparent 70%, var(--bg) 100%);
 }
-.hero__copy { max-width: 640px; }
-.hero h1 { font-size: clamp(2.6rem, 5.6vw, 4.9rem); font-weight: 400; line-height: 1.04; margin-bottom: 26px; }
+.hero__copy { max-width: 760px; }
+.hero h1 { font-size: clamp(2.5rem, 4.6vw, 4.1rem); font-weight: 650; line-height: 1.12; margin-bottom: 22px; }
 .hero h1 .soft { display: block; font-weight: 400; color: var(--ink-2); }
 .lead { font-size: clamp(1.08rem, 1.35vw, 1.27rem); color: var(--ink-2); max-width: 34em; margin-bottom: 34px; }
 .hero__action { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 30px; }
@@ -171,7 +173,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .stack__media { margin: 0; min-height: 260px; }
 .stack__media img { width: 100%; height: 100%; object-fit: cover; }
 .stack__body { padding: clamp(26px, 4vw, 56px); display: flex; flex-direction: column; justify-content: center; gap: 14px; }
-.stack__num { font-family: var(--font-display); font-weight: 400; font-size: clamp(2.6rem, 4vw, 3.8rem); color: var(--ink-3); line-height: 1; }
+.stack__num { font-family: var(--font-display); font-weight: 300; font-size: clamp(2.6rem, 4vw, 3.8rem); color: var(--ink-3); line-height: 1; }
 .stack__body h3 { font-size: clamp(1.6rem, 2.6vw, 2.3rem); }
 .stack__body p { color: var(--ink-2); font-size: 1.08rem; max-width: 28em; }
 .stations__cta { margin-top: 40px; font-size: 1.1rem; }
@@ -198,7 +200,7 @@ input[type="range"] { width: 100%; accent-color: var(--ink); height: 32px; curso
 }
 .result__kicker { color: var(--ink-3); font-size: 0.95rem; margin-bottom: 6px; }
 .result__total { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-.result__num { font-family: var(--font-display); font-size: clamp(3.4rem, 6vw, 4.8rem); font-weight: 400; line-height: 1; font-variant-numeric: lining-nums tabular-nums; }
+.result__num { font-family: var(--font-display); font-size: clamp(3.4rem, 6vw, 4.8rem); font-weight: 600; line-height: 1; font-variant-numeric: lining-nums tabular-nums; }
 .result__unit { font-size: 1.2rem; color: var(--ink-2); }
 .result__sub { color: var(--ink-2); margin: 8px 0 22px; }
 .mix { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 14px; }
@@ -283,7 +285,7 @@ input[type="range"] { width: 100%; accent-color: var(--ink); height: 32px; curso
 .faq__grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
 .faq details { border-bottom: 1px solid var(--line); }
 .faq details:first-child { border-top: 1px solid var(--line); }
-.faq summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 22px 0; font-family: var(--font-display); font-size: clamp(1.2rem, 1.8vw, 1.45rem); }
+.faq summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 22px 0; font-family: var(--font-body); font-weight: 500; font-size: clamp(1.2rem, 1.8vw, 1.45rem); }
 .faq summary::-webkit-details-marker { display: none; }
 .faq summary::after { content: "+"; font-family: var(--font-body); font-size: 1.6rem; color: var(--ink-3); line-height: 1; }
 .faq details[open] summary::after { content: "–"; }
@@ -316,7 +318,8 @@ input[type="range"] { width: 100%; accent-color: var(--ink); height: 32px; curso
    מסכים קטנים
    ===================================================================== */
 @media (max-width: 900px) {
-  :root { --header-h: 64px; }
+  :root { --header-h: 68px; }
+  .brand__logo { height: 54px; }
   .main-nav ul { display: none; }
   .nav-open .main-nav ul {
     display: grid; gap: 0; position: absolute; top: var(--header-h); inset-inline: 0;
@@ -354,10 +357,13 @@ input[type="range"] { width: 100%; accent-color: var(--ink); height: 32px; curso
 }
 
 @media (max-width: 760px) {
-  .hero { min-height: 0; display: block; padding-block: calc(var(--header-h) + 40px) 0; }
+  .hero { min-height: 0; display: block; padding-block: 12px 0; }   /* הלוגו הגדול עולה למקום הריק בכותרת (שם הלוגו הקטן מוסתר עד הגלילה) */
+  .hero__logo { width: 150px; margin-bottom: 6px; }
+  .hero__copy > .eyebrow { display: none; }   /* בטלפון הלוגו אומר "מי", והשורה הזו דוחפת את הכפתור מתחת למסך */
+  .hero .lead { margin-bottom: 22px; }
   .hero::before { background: linear-gradient(to bottom, rgba(20,18,16,0.5) 0%, rgba(20,18,16,0.74) 30%, rgba(20,18,16,0.84) 62%, var(--bg) 100%); }
   .hero__back img { object-position: 50% 30%; }
-  .hero h1 { font-size: clamp(2.35rem, 10vw, 3.1rem); }
+  .hero h1 { font-size: clamp(2.1rem, 9vw, 2.8rem); margin-bottom: 16px; }
   .hero__action { align-items: stretch; }
   .hero__action .btn { width: 100%; }
   .hero__edge { position: relative; left: auto; bottom: auto; width: auto; margin: 40px 4px -86px; transform: rotate(-1.2deg); }
@@ -367,6 +373,19 @@ input[type="range"] { width: 100%; accent-color: var(--ink); height: 32px; curso
   .closing__inner .btn { width: 100%; }
   .gallery { columns: 2; column-gap: 10px; }
   .g-item { margin-bottom: 10px; }
+}
+/* מסכים נמוכים: הכפתור הראשי חייב להישאר במסך הראשון */
+@media (min-width: 761px) and (max-height: 820px) {
+  .hero__logo { width: 150px; margin-bottom: 6px; }
+  .hero h1 { font-size: clamp(2.3rem, 4vw, 3.4rem); margin-bottom: 16px; }
+  .hero .lead { margin-bottom: 24px; }
+}
+@media (max-width: 380px) {
+  .hero h1 { font-size: 1.85rem; }
+}
+@media (max-width: 760px) and (max-height: 620px) {
+  .hero__logo { width: 112px; }
+  .hero .lead { font-size: 1rem; line-height: 1.6; }
 }
 @media (min-width: 761px) and (max-width: 1100px) {
   .occasions p { padding-inline-end: 0; padding-block: 30px 30px; max-width: 52%; }
@@ -425,7 +444,7 @@ html[data-motion="off"] .steps { --p: 1 !important; }
 .p-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
 .p-card a { display: block; height: 100%; text-decoration: none; }
 .p-card img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: #efe8df; }
-.p-card__name { font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; line-height: 1.25; padding: 14px 16px 4px; margin: 0; }
+.p-card__name { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; line-height: 1.25; padding: 14px 16px 4px; margin: 0; }
 .p-card__text { color: var(--ink-2); font-size: 0.95rem; line-height: 1.55; padding: 0 16px 18px; }
 .p-card:hover { border-color: var(--ink-3); }
 .p-card:hover .p-card__name { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; }
@@ -475,7 +494,7 @@ html[data-motion="off"] .steps { --p: 1 !important; }
 .contact-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 12px; }
 .contact-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; display: grid; gap: 10px; align-content: start; }
 .contact-card h2 { font-size: 1.35rem; margin: 0; }
-.contact-card__num { font-family: var(--font-display); font-size: 1.8rem; color: var(--ink); text-align: right; }
+.contact-card__num { font-family: var(--font-body); font-weight: 500; font-size: 1.8rem; color: var(--ink); text-align: right; }
 
 .footer__grid { grid-template-columns: 1.3fr 1fr 1fr 0.8fr; }
 .footer__list--plain a { color: var(--ink-2); text-decoration: none; }
@@ -523,7 +542,7 @@ html[data-motion="off"] .steps { --p: 1 !important; }
 .r-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
 .r-card a { display: flex; flex-direction: column; height: 100%; text-decoration: none; }
 .r-card img, .r-card .recipe-cover { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
-.r-card__name { font-family: var(--font-display); font-weight: 400; font-size: 1.35rem; line-height: 1.25; padding: 16px 18px 4px; margin: 0; }
+.r-card__name { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; line-height: 1.25; padding: 16px 18px 4px; margin: 0; }
 .r-card__text { color: var(--ink-2); font-size: 0.97rem; line-height: 1.6; padding: 0 18px 12px; }
 .r-card__meta { margin-top: auto; padding: 0 18px 16px; color: var(--ink-3); font-size: 0.9rem; }
 .r-card:hover { border-color: var(--ink-3); }
@@ -564,7 +583,7 @@ html[data-motion="off"] .steps { --p: 1 !important; }
 .checklist input:checked + span { color: var(--ink-3); text-decoration: line-through; }
 .steps-list { list-style: decimal; margin: 0; padding-inline-start: 0; display: grid; gap: 18px; }
 .steps-list li { list-style: none; position: relative; padding-inline-start: 56px; min-height: 40px; color: var(--ink-2); font-size: 1.08rem; line-height: 1.75; }
-.steps-num { position: absolute; inset-inline-start: 0; top: 0; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--ink-3); color: var(--ink); font-family: var(--font-display); font-size: 1.15rem; line-height: 1; }
+.steps-num { position: absolute; inset-inline-start: 0; top: 0; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--ink-3); color: var(--ink); font-family: var(--font-body); font-weight: 500; font-size: 1.15rem; line-height: 1; }
 .recipe__tip { grid-column: 1 / -1; border: 1px solid var(--line); border-inline-start: 3px solid var(--ink-2); border-radius: 12px; padding: 18px 22px; background: var(--bg-2); }
 .recipe__tip strong { display: block; font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 6px; }
 .recipe__tip p { color: var(--ink-2); }
@@ -674,3 +693,6 @@ html.js .wa-float, html.js .wa-float.is-visible { transition: none; transform: n
 /* פס הניהול של וורדפרס (רק למשתמשים מחוברים) לא מסתיר את הכותרת */
 body.admin-bar .site-header { top: 32px; }
 @media (max-width: 782px) { body.admin-bar .site-header { top: 46px; } }
+
+/* כתב היד (כמו הלוגו) רק בכותרות הגדולות. כותרות קטנות ופונקציונליות בגופן העגול, כדי שיהיו קריאות */
+.footer__title, .recipe__body h3, .field legend { font-family: var(--font-body); font-weight: 600; }

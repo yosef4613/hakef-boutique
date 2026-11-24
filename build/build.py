@@ -182,8 +182,8 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
 {meta_block}
 <link rel="icon" href="{root}assets/img/logo-120.png">
 <link rel="apple-touch-icon" href="{root}assets/img/logo-240.png">
-<link rel="preload" href="{root}assets/fonts/BonaNova-400-hebrew.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="{root}assets/fonts/Heebo-hebrew.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="{root}assets/fonts/Playpen-hebrew.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="{root}assets/fonts/Fredoka-hebrew.woff2" as="font" type="font/woff2" crossorigin>
 {preload}<link rel="stylesheet" href="{root}assets/css/fonts.css?v={asset_v('css/fonts.css')}">
 <link rel="stylesheet" href="{root}assets/css/site.css?v={asset_v('css/site.css')}">
 <script>
@@ -204,8 +204,8 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
 <header class="site-header" id="top">
   <div class="container site-header__row">
     <a class="brand" href="{root or './'}" aria-label="{SITE['name']} — דף הבית">
-      <span class="brand__mark"><img src="{root}assets/img/logo-120.webp" width="120" height="126" alt=""></span>
-      <span class="brand__text"><strong>{SITE['name']}</strong><small>קייטרינג קינוחים בוטיק</small></span>
+      <img class="brand__logo" src="{root}assets/img/logo-light-120.webp" srcset="{root}assets/img/logo-light-200.webp 2x" width="133" height="120" alt="">
+      <span class="brand__text"><small>קייטרינג קינוחים<br>בוטיק</small></span>
     </a>
     <nav class="main-nav" aria-label="ניווט ראשי">
       <ul id="nav-list">
@@ -233,7 +233,7 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
 <footer class="site-footer" id="contact-footer">
   <div class="container footer__grid">
     <div class="footer__brand">
-      <span class="brand__mark brand__mark--lg"><img src="{root}assets/img/logo-240.webp" width="240" height="252" alt="הלוגו של הכיף שבאפיה" loading="lazy"></span>
+      <img class="footer__logo" src="{root}assets/img/logo-light-200.webp" srcset="{root}assets/img/logo-light-480.webp 2x" width="222" height="200" alt="הלוגו של הכיף שבאפיה: הסוד לאפיה מוצלחת" loading="lazy">
       <p>קייטרינג קינוחים בוטיק: בר קינוחים ופטיפורים, מגשי פטיפורים, עוגות מעוצבות ומארזי מתוקים בהזמנה אישית. {SITE['area']}.</p>
     </div>
     <div>

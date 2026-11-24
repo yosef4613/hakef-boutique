@@ -8,10 +8,10 @@
 <?php hakef_head_meta(); ?>
 <link rel="icon" href="/assets/img/logo-120.png">
 <link rel="apple-touch-icon" href="/assets/img/logo-240.png">
-<link rel="preload" href="/assets/fonts/BonaNova-400-hebrew.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/assets/fonts/Heebo-hebrew.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/fonts.css?v=88f40325">
-<link rel="stylesheet" href="/assets/css/site.css?v=b43ba226">
+<link rel="preload" href="/assets/fonts/Playpen-hebrew.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/Fredoka-hebrew.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/fonts.css?v=0cddc6be">
+<link rel="stylesheet" href="/assets/css/site.css?v=a01df662">
 <script>
   /* העדפת תנועה: לפני הציור הראשון, כדי שלא יהיה הבהוב */
   (function () {
@@ -32,8 +32,8 @@
 <header class="site-header" id="top">
   <div class="container site-header__row">
     <a class="brand" href="/" aria-label="הכיף שבאפיה — דף הבית">
-      <span class="brand__mark"><img src="/assets/img/logo-120.webp" width="120" height="126" alt=""></span>
-      <span class="brand__text"><strong>הכיף שבאפיה</strong><small>קייטרינג קינוחים בוטיק</small></span>
+      <img class="brand__logo" src="/assets/img/logo-light-120.webp" srcset="/assets/img/logo-light-200.webp 2x" width="133" height="120" alt="">
+      <span class="brand__text"><small>קייטרינג קינוחים<br>בוטיק</small></span>
     </a>
     <nav class="main-nav" aria-label="ניווט ראשי">
       <ul id="nav-list">

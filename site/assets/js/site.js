@@ -83,6 +83,13 @@
     setFloating(mobileCta, show);
     setFloating(waFloat, show);
   }
+  /* דף הבית: הלוגו הגדול במסך הראשון. הלוגו הקטן בכותרת מופיע רק כשהגדול כבר לא נראה, כדי שלא יהיו שניים צמודים */
+  var heroLogo = $('.hero__logo');
+  if (heroLogo && header && 'IntersectionObserver' in window) {
+    header.classList.add('has-hero-logo');
+    new IntersectionObserver(function (e) { header.classList.toggle('show-logo', !e[0].isIntersecting); },
+      { rootMargin: '-' + (header.offsetHeight || 80) + 'px 0px 0px 0px' }).observe(heroLogo);
+  }
   if ('IntersectionObserver' in window) {
     if (mainAction) new IntersectionObserver(function (e) { mainGone = !e[0].isIntersecting && e[0].boundingClientRect.top < 0; updateFloating(); }).observe(mainAction);
     if (planSection) new IntersectionObserver(function (e) { planVisible = e[0].isIntersecting; updateFloating(); }, { rootMargin: '0px 0px -30% 0px' }).observe(planSection);
