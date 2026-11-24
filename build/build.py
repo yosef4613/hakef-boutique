@@ -856,6 +856,9 @@ def main():
         import shutil
         shutil.copytree(os.path.join(SRC_SITE, 'assets'), os.path.join(OUT, 'assets'), dirs_exist_ok=True)
         shutil.copy(os.path.join(ROOT, 'deploy', '.htaccess'), os.path.join(OUT, '.htaccess'))
+        # קבצים שחייבים לשבת בשורש האתר כמו שהם, למשל אימות הבעלות של Google Search Console. אסור למחוק אותם.
+        for fn in os.listdir(os.path.join(ROOT, 'build', 'root-files')):
+            shutil.copy(os.path.join(ROOT, 'build', 'root-files', fn), os.path.join(OUT, fn))
         # IndexNow: קובץ המפתח בשורש האתר מאשר שאנחנו בעלי האתר, כדי לשלוח כתובות לבינג ולמנועים נוספים
         key = open(os.path.join(ROOT, 'build', 'data', 'indexnow-key.txt')).read().strip()
         with open(os.path.join(OUT, key + '.txt'), 'w') as f:
