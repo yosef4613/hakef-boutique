@@ -11,6 +11,13 @@ import html, json, os, re, sys, urllib.parse, datetime
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC_SITE = os.path.join(ROOT, 'site')            # התמונות, העיצוב והסקריפט נמצאים כאן
+
+
+def asset_v(rel):
+    """גרסה קצרה לפי תוכן הקובץ (assets/...), כדי שדפדפן לא ישאיר עיצוב ישן מהמטמון אחרי עדכון."""
+    import hashlib
+    with open(os.path.join(SRC_SITE, 'assets', rel), 'rb') as f:
+        return hashlib.md5(f.read()).hexdigest()[:8]
 IMG_DIR = os.path.join(SRC_SITE, 'assets', 'img')
 PRODUCTION = '--production' in sys.argv
 OUT = os.path.abspath(sys.argv[sys.argv.index('--out') + 1]) if '--out' in sys.argv else SRC_SITE
@@ -175,10 +182,10 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
 {meta_block}
 <link rel="icon" href="{root}assets/img/logo-120.png">
 <link rel="apple-touch-icon" href="{root}assets/img/logo-240.png">
-<link rel="preload" href="{root}assets/fonts/FrankRuhlLibre-hebrew.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="{root}assets/fonts/Assistant-hebrew.woff2" as="font" type="font/woff2" crossorigin>
-{preload}<link rel="stylesheet" href="{root}assets/css/fonts.css">
-<link rel="stylesheet" href="{root}assets/css/site.css">
+<link rel="preload" href="{root}assets/fonts/BonaNova-400-hebrew.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="{root}assets/fonts/Heebo-hebrew.woff2" as="font" type="font/woff2" crossorigin>
+{preload}<link rel="stylesheet" href="{root}assets/css/fonts.css?v={asset_v('css/fonts.css')}">
+<link rel="stylesheet" href="{root}assets/css/site.css?v={asset_v('css/site.css')}">
 <script>
   /* העדפת תנועה: לפני הציור הראשון, כדי שלא יהיה הבהוב */
   (function () {{
@@ -272,7 +279,7 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
   <a class="icon-link icon-link--box" href="{wa()}" target="_blank" rel="noopener" aria-label="וואטסאפ" tabindex="-1" data-wa>{WA_ICON}</a>
 </div>
 
-<script src="{root}assets/js/site.js" defer></script>
+<script src="{root}assets/js/site.js?v={asset_v('js/site.js')}" defer></script>
 </body>
 </html>
 '''
@@ -604,7 +611,7 @@ def build_404():
     """404 לאתר האמיתי: נתיבים מוחלטים מהשורש."""
     doc = f'''<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>העמוד לא נמצא | {SITE["name"]}</title>
-<meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/css/fonts.css"><link rel="stylesheet" href="/assets/css/site.css"></head>
+<meta name="robots" content="noindex"><link rel="stylesheet" href="/assets/css/fonts.css?v={asset_v('css/fonts.css')}"><link rel="stylesheet" href="/assets/css/site.css?v={asset_v('css/site.css')}"></head>
 <body><main class="container prose" style="padding-block:120px"><p class="eyebrow">404</p><h1>העמוד הזה לא נמצא</h1>
 <p class="lead">אולי הוא עבר מקום. אפשר להמשיך מכאן:</p>
 <p><a class="btn btn--primary" href="/">לדף הבית <span aria-hidden="true">←</span></a></p>

@@ -8,10 +8,10 @@
 <?php hakef_head_meta(); ?>
 <link rel="icon" href="/assets/img/logo-120.png">
 <link rel="apple-touch-icon" href="/assets/img/logo-240.png">
-<link rel="preload" href="/assets/fonts/FrankRuhlLibre-hebrew.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/assets/fonts/Assistant-hebrew.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/fonts.css">
-<link rel="stylesheet" href="/assets/css/site.css">
+<link rel="preload" href="/assets/fonts/BonaNova-400-hebrew.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/Heebo-hebrew.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/fonts.css?v=88f40325">
+<link rel="stylesheet" href="/assets/css/site.css?v=b43ba226">
 <script>
   /* העדפת תנועה: לפני הציור הראשון, כדי שלא יהיה הבהוב */
   (function () {
