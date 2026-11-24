@@ -32,7 +32,7 @@
 <header class="site-header" id="top">
   <div class="container site-header__row">
     <a class="brand" href="/" aria-label="הכיף שבאפיה — דף הבית">
-      <img class="brand__logo" src="/assets/img/logo-light-120.webp" srcset="/assets/img/logo-light-200.webp 2x" width="133" height="120" alt="">
+      <img class="brand__logo" src="/assets/img/logo-light-120.webp" srcset="/assets/img/logo-light-140.webp 2x" width="133" height="120" alt="">
       <span class="brand__text"><small>קייטרינג קינוחים<br>בוטיק</small></span>
     </a>
     <nav class="main-nav" aria-label="ניווט ראשי">

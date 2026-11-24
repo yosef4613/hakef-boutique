@@ -204,7 +204,7 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
 <header class="site-header" id="top">
   <div class="container site-header__row">
     <a class="brand" href="{root or './'}" aria-label="{SITE['name']} — דף הבית">
-      <img class="brand__logo" src="{root}assets/img/logo-light-120.webp" srcset="{root}assets/img/logo-light-200.webp 2x" width="133" height="120" alt="">
+      <img class="brand__logo" src="{root}assets/img/logo-light-120.webp" srcset="{root}assets/img/logo-light-140.webp 2x" width="133" height="120" alt="">
       <span class="brand__text"><small>קייטרינג קינוחים<br>בוטיק</small></span>
     </a>
     <nav class="main-nav" aria-label="ניווט ראשי">
@@ -369,7 +369,7 @@ def build_home(products):
     faq_ld = {'@context': 'https://schema.org', '@type': 'FAQPage',
               'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in FAQ_GENERAL]}
     website = {'@context': 'https://schema.org', '@type': 'WebSite', 'name': SITE['name'], 'url': SITE['url'] + '/', 'inLanguage': 'he-IL'}
-    layout('', 'בר קינוחים ופטיפורים לאירועים בירושלים | עוגות מעוצבות | הכיף שבאפיה',
+    layout('', 'בר קינוחים, פטיפורים ועוגות מעוצבות בירושלים | הכיף שבאפיה',
            'בר קינוחים ופטיפורים מעוצב, מגשי פטיפורים ועוגות מעוצבות בהזמנה אישית לבר מצווה, בת מצווה, ברית ושבע ברכות בירושלים והסביבה. כשרות מהודרת. הצעת מחיר בוואטסאפ.',
            body, extra_ld=[BUSINESS, website, faq_ld], preload=preload)
 
@@ -462,14 +462,14 @@ def build_product(p, products):
     <h2 id="rel-title" class="related__title">עוד מ{cat["name"]}</h2>
     {product_grid(root, related)}
   </section>'''
-    prod_ld = {'@context': 'https://schema.org', '@type': 'Product', 'name': p['name'],
-               'description': ' '.join([p['short']] + p['desc']),
-               'image': [SITE['url'] + '/assets/img/' + urllib.parse.quote(f'{p["img"]}-{widths(p["img"])[-1]}.webp')],
-               'brand': {'@type': 'Brand', 'name': SITE['name']}, 'category': cat['name'],
-               'url': abs_url(path)}
-    layout(path, f'{p["name"]} | {cat["name"]} בירושלים | הכיף שבאפיה',
+    # בלי נתונים מסוג "מוצר": גוגל דורש בהם מחיר או ביקורות, והמחיר כאן נקבע בהצעה אישית.
+    # כותרת קצרה מספיק כדי שגוגל לא יקטע אותה (עד כ־62 תווים)
+    title = next(t for t in (f'{p["name"]} | {cat["name"]} בירושלים | הכיף שבאפיה',
+                              f'{p["name"]} בירושלים | הכיף שבאפיה',
+                              f'{p["name"]} | הכיף שבאפיה', p['name']) if len(t) <= 62)
+    layout(path, title,
            f'{p["short"]} בהזמנה אישית, {SITE["area"]}. הצעת מחיר בוואטסאפ.', body,
-           extra_ld=[crumbs_ld, prod_ld], og_img=f'{p["img"]}-800.webp')
+           extra_ld=[crumbs_ld], og_img=f'{p["img"]}-800.webp')
 
 
 def build_bar_page(products):
@@ -532,7 +532,7 @@ def build_bar_page(products):
     service = {'@context': 'https://schema.org', '@type': 'Service', 'serviceType': 'בר קינוחים ופטיפורים לאירועים',
                'provider': {'@id': SITE['url'] + '/#business'}, 'areaServed': {'@type': 'City', 'name': 'ירושלים'},
                'description': 'תכנון, הכנה והקמה של בר קינוחים ופטיפורים מעוצב לבר מצווה, בת מצווה, ברית, אירוסין, שבע ברכות ואירועי חברה.'}
-    layout(path, 'בר קינוחים ופטיפורים לאירועים בירושלים | בר מתוקים לבר מצווה | הכיף שבאפיה',
+    layout(path, 'בר קינוחים לאירועים ובר מצווה בירושלים | הכיף שבאפיה',
            'בר קינוחים ופטיפורים מעוצב לבר מצווה, בת מצווה, ברית, אירוסין ושבע ברכות בירושלים והסביבה. מה כולל הבר, כמה פטיפורים צריך, ואיך מזמינים.',
            body, extra_ld=[crumbs_ld, service, faq_ld], og_img='ev-bar-full-1200.webp')
 
@@ -599,7 +599,7 @@ def build_static_pages():
     <p class="micro">עדכון אחרון: {TODAY}</p>''', 'הצהרת נגישות')
 
     simple_page('privacy-policy-1/', 'מדיניות פרטיות | הכיף שבאפיה',
-                'מדיניות הפרטיות של אתר הכיף שבאפיה: אילו פרטים נאספים ולמה.',
+                'מדיניות הפרטיות של אתר הכיף שבאפיה: אילו פרטים נאספים, למה, איפה הם נשמרים ואיך פונים אלינו בכל שאלה.',
                 'מדיניות פרטיות', 'פרטיות', f'''
     <p>האתר לא שומר פרטים אישיים בשרת. כשאתם שולחים בקשה להצעת מחיר, הפרטים שמילאתם נפתחים כהודעה באפליקציית וואטסאפ או המייל שלכם, ונשלחים אלינו רק כשאתם לוחצים "שליחה".</p>
     <p>אנחנו משתמשים בפרטים האלה רק כדי לחזור אליכם בעניין ההזמנה, ולא מעבירים אותם לאף גורם אחר.</p>
@@ -661,7 +661,7 @@ def build_htaccess():
               '', '<IfModule mod_expires.c>', '  ExpiresActive On',
               '  ExpiresByType image/webp "access plus 1 year"', '  ExpiresByType image/jpeg "access plus 1 year"', '  ExpiresByType image/png "access plus 1 year"',
               '  ExpiresByType font/woff2 "access plus 1 year"',
-              '  ExpiresByType text/css "access plus 1 week"', '  ExpiresByType application/javascript "access plus 1 week"',
+              '  ExpiresByType text/css "access plus 1 year"', '  ExpiresByType application/javascript "access plus 1 year"', '  ExpiresByType text/javascript "access plus 1 year"',
               '  ExpiresByType text/html "access plus 0 seconds"', '</IfModule>',
               '<IfModule mod_deflate.c>', '  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/xml', '</IfModule>',
               '<IfModule mod_headers.c>', '  Header always set X-Content-Type-Options "nosniff"',
@@ -829,6 +829,10 @@ def main():
         import shutil
         shutil.copytree(os.path.join(SRC_SITE, 'assets'), os.path.join(OUT, 'assets'), dirs_exist_ok=True)
         shutil.copy(os.path.join(ROOT, 'deploy', '.htaccess'), os.path.join(OUT, '.htaccess'))
+        # IndexNow: קובץ המפתח בשורש האתר מאשר שאנחנו בעלי האתר, כדי לשלוח כתובות לבינג ולמנועים נוספים
+        key = open(os.path.join(ROOT, 'build', 'data', 'indexnow-key.txt')).read().strip()
+        with open(os.path.join(OUT, key + '.txt'), 'w') as f:
+            f.write(key)
     print(f'נבנו {len(PAGES_FOR_SITEMAP)} עמודים ל-{OUT}', '(production)' if PRODUCTION else '(תצוגה מקדימה, noindex)')
 
 

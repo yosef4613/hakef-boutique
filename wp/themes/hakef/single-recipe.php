@@ -11,6 +11,8 @@ $ings    = hakef_parse_lines( $m['ingredients'] );
 $steps   = hakef_parse_lines( $m['steps'] );
 $n_ings  = count( array_filter( $ings, function ( $x ) { return 'item' === $x['type']; } ) );
 $img_url = has_post_thumbnail() ? get_the_post_thumbnail_url( $pid, 'hakef-hero' ) : '';
+// בלי תמונה: כריכה ממותגת, כי גוגל דורש תמונה במתכון (עדיף להעלות צילום אמיתי של המנה)
+$ld_img  = $img_url ? $img_url : home_url( '/assets/img/recipe-cover-1200.jpg' );
 
 list( $crumbs, $crumbs_ld ) = hakef_breadcrumbs( array( array( 'מתכונים', get_post_type_archive_link( 'recipe' ) ), array( $title, null ) ) );
 
@@ -26,9 +28,8 @@ $recipe_ld = array(
 	'recipeIngredient'   => array_values( array_map( function ( $x ) { return $x['text']; }, array_filter( $ings, function ( $x ) { return 'item' === $x['type']; } ) ) ),
 	'recipeInstructions' => array_values( array_map( function ( $x ) { return array( '@type' => 'HowToStep', 'text' => $x['text'] ); }, array_filter( $steps, function ( $x ) { return 'item' === $x['type']; } ) ) ),
 );
-if ( $img_url ) {
-	$recipe_ld['image'] = array( $img_url );
-}
+$recipe_ld['image']    = array( $ld_img );
+$recipe_ld['keywords'] = $title . ', מתכון, קינוח, אפייה, ' . HAKEF_SITE['name'];
 if ( $m['yield'] ) {
 	$recipe_ld['recipeYield'] = $m['yield'];
 }
@@ -40,7 +41,7 @@ hakef_set_head( array(
 	'title'     => $title . ' – מתכון | ' . HAKEF_SITE['name'],
 	'desc'      => mb_substr( $summary . ' מצרכים ואופן הכנה, צעד אחר צעד.', 0, 160 ),
 	'canonical' => get_permalink(),
-	'image'     => $img_url,
+	'image'     => $ld_img,
 	'og_type'   => 'article',
 	'ld'        => array( $crumbs_ld, $recipe_ld ),
 ) );

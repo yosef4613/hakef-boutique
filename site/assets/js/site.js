@@ -34,7 +34,8 @@
       b.setAttribute('aria-pressed', on ? 'false' : 'true');
       var l = $('.motion-toggle__label', b);
       if (l) l.textContent = on ? 'תנועה: פועלת' : 'תנועה: כבויה';
-      b.setAttribute('aria-label', on ? 'כיבוי אנימציות' : 'הפעלת אנימציות');
+      // התווית לקורא מסך מתחילה בטקסט שרואים על הכפתור, ואחריו ההסבר
+      b.setAttribute('aria-label', on ? 'תנועה: פועלת. לחיצה מכבה את האנימציות' : 'תנועה: כבויה. לחיצה מפעילה את האנימציות');
     });
   }
   $$('[data-motion-toggle]').forEach(function (b) {
