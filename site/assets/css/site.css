@@ -77,7 +77,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .site-header.is-solid { background: rgba(20, 18, 16, 0.9); border-bottom-color: var(--line); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
 .site-header__row { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-.brand__mark { width: 48px; height: 48px; border-radius: 50%; background: #fff; display: grid; place-items: center; padding: 6px; flex: none; }
+.brand__mark { width: 48px; height: 48px; border-radius: 50%; background: #fff; display: grid; place-items: center; padding: 6px; flex: none; overflow: hidden; }
 .brand__mark img { width: 100%; height: 100%; object-fit: contain; }
 .brand__mark--lg { width: 96px; height: 96px; padding: 12px; }
 .brand__text { display: flex; flex-direction: column; line-height: 1.15; }
