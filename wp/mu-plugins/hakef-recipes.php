@@ -2,7 +2,7 @@
 /**
  * Plugin Name: הכיף שבאפיה: מתכונים
  * Description: סוג תוכן "מתכון" עם מסך הוספה פשוט (כותרת, תמונה, מצרכים, אופן הכנה), תפקיד "עורכת מתכונים", ומפת אתר למתכונים בלבד.
- * Version: 1.0.0
+ * Version: 1.1.0
  *
  * מותקן כ־mu-plugin (wp-content/mu-plugins), ולכן נטען תמיד ואי אפשר לכבות אותו בטעות.
  */
@@ -215,6 +215,92 @@ add_filter( 'login_redirect', function ( $redirect, $requested, $user ) {
 	}
 	return $redirect;
 }, 10, 3 );
+
+/* ------------------------------------------------------------------ קיצור דרך למתכונים בראש לוח הבקרה (למנהלת האתר) */
+add_action( 'wp_dashboard_setup', function () {
+	if ( ! current_user_can( 'edit_recipes' ) ) {
+		return;
+	}
+	wp_add_dashboard_widget( 'hakef_recipes_widget', 'המתכונים באתר', 'hakef_render_dashboard_widget' );
+	// "טיוטה מהירה" יוצרת פוסט ולא מתכון, וחדשות וורדפרס רק מסיחות: מורידים את שתיהן
+	remove_meta_box( 'dashboard_quick_press', 'dashboard', 'side' );
+	remove_meta_box( 'dashboard_primary', 'dashboard', 'side' );
+	global $wp_meta_boxes;
+	$normal = $wp_meta_boxes['dashboard']['normal']['core'] ?? array();
+	if ( isset( $normal['hakef_recipes_widget'] ) ) {
+		$mine = array( 'hakef_recipes_widget' => $normal['hakef_recipes_widget'] );
+		unset( $normal['hakef_recipes_widget'] );
+		$wp_meta_boxes['dashboard']['normal']['core'] = $mine + $normal;
+	}
+} );
+
+// גם כשנשמר למשתמשת סדר קופסאות משלה, קופסת המתכונים נשארת ראשונה
+add_filter( 'get_user_option_meta-box-order_dashboard', function ( $order ) {
+	if ( ! is_array( $order ) || ! current_user_can( 'edit_recipes' ) ) {
+		return $order;
+	}
+	foreach ( $order as $col => $ids ) {
+		$order[ $col ] = implode( ',', array_diff( array_filter( explode( ',', (string) $ids ) ), array( 'hakef_recipes_widget' ) ) );
+	}
+	$order['normal'] = ltrim( 'hakef_recipes_widget,' . ( $order['normal'] ?? '' ), ',' );
+	$order['normal'] = rtrim( $order['normal'], ',' );
+	return $order;
+} );
+
+function hakef_render_dashboard_widget() {
+	$count     = wp_count_posts( 'recipe' );
+	$published = (int) ( $count->publish ?? 0 );
+	$drafts    = (int) ( $count->draft ?? 0 );
+	$recent    = get_posts( array( 'post_type' => 'recipe', 'post_status' => array( 'publish', 'draft' ), 'numberposts' => 5 ) );
+	echo '<style>
+	.hakef-dash{font-size:14px;line-height:1.8}
+	.hakef-dash__actions{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 16px}
+	.hakef-dash__actions .button-hero{font-size:16px}
+	.hakef-dash__list{margin:0 0 12px;padding:0;list-style:none}
+	.hakef-dash__list li{display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid #f0f0f1}
+	.hakef-dash__list img{width:40px;height:40px;object-fit:cover;border-radius:6px}
+	.hakef-dash__steps{margin:6px 22px 0 0;color:#50575e}
+	</style>';
+	echo '<div class="hakef-dash">';
+	echo '<p>כאן מוסיפים ומעדכנים את המתכונים שמופיעים באתר. העיצוב נעשה לבד.</p>';
+	echo '<p class="hakef-dash__actions">'
+		. '<a class="button button-primary button-hero" href="' . esc_url( admin_url( 'post-new.php?post_type=recipe' ) ) . '">+ הוספת מתכון חדש</a>'
+		. '<a class="button button-hero" href="' . esc_url( admin_url( 'edit.php?post_type=recipe' ) ) . '">עריכת המתכונים הקיימים</a>'
+		. '</p>';
+	$pub_txt   = 1 === $published ? 'מתכון אחד' : '<strong>' . $published . '</strong> מתכונים';
+	$draft_txt = ! $drafts ? '' : ( 1 === $drafts ? ' (ועוד טיוטה אחת)' : ' (ועוד ' . $drafts . ' טיוטות)' );
+	printf(
+		'<p>באתר עכשיו: %s%s. <a href="%s" target="_blank" rel="noopener">לצפייה בעמוד המתכונים</a></p>',
+		$pub_txt,
+		$draft_txt,
+		esc_url( get_post_type_archive_link( 'recipe' ) )
+	);
+	if ( $recent ) {
+		echo '<ul class="hakef-dash__list">';
+		foreach ( $recent as $r ) {
+			$thumb = get_the_post_thumbnail( $r, 'thumbnail' );
+			printf(
+				'<li>%s<a href="%s">%s</a>%s</li>',
+				$thumb ?: '',
+				esc_url( get_edit_post_link( $r->ID ) ),
+				esc_html( get_the_title( $r ) ),
+				'draft' === $r->post_status ? ' <em>(טיוטה)</em>' : ''
+			);
+		}
+		echo '</ul>';
+	}
+	echo '<strong>איך מוסיפים מתכון:</strong>';
+	echo '<ol class="hakef-dash__steps"><li>כותבים שם למתכון.</li><li>בוחרים תמונה ("תמונת המתכון" בצד).</li>'
+		. '<li>ממלאים מצרכים ואופן הכנה, שורה לכל פריט.</li><li>לוחצים "פרסום".</li></ol>';
+	echo '</div>';
+}
+
+/* ------------------------------------------------------------------ בלי תגובות ובלי הרשמה פתוחה
+ * האתר לא צריך אותן (אין חנות ואין בלוג עם תגובות), ומאז שהמיילים עובדים
+ * כל הרשמת ספאם או תגובת ספאם הייתה שולחת התראה למייל של בעלת העסק. */
+add_filter( 'comments_open', '__return_false', 20 );
+add_filter( 'pings_open', '__return_false', 20 );
+add_filter( 'pre_option_users_can_register', '__return_zero' );
 
 /* ------------------------------------------------------------------ מפת אתר: רק מתכונים */
 add_filter( 'wp_sitemaps_add_provider', function ( $provider, $name ) {
