@@ -200,12 +200,12 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#141210">
+<meta name="theme-color" content="#1c110c">
 {meta_block}
 <link rel="icon" href="{root}assets/img/logo-120.png">
 <link rel="apple-touch-icon" href="{root}assets/img/logo-240.png">
-<link rel="preload" href="{root}assets/fonts/Playpen-hebrew.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="{root}assets/fonts/Fredoka-hebrew.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="{root}assets/fonts/BonaNova-400-hebrew.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="{root}assets/fonts/Heebo-hebrew.woff2" as="font" type="font/woff2" crossorigin>
 {preload}<link rel="stylesheet" href="{root}assets/css/fonts.css?v={asset_v('css/fonts.css')}">
 <link rel="stylesheet" href="{root}assets/css/site.css?v={asset_v('css/site.css')}">
 <script>{MOTION_SCRIPT}</script>
@@ -378,8 +378,8 @@ def build_home(products):
     body = open(os.path.join(ROOT, 'build', 'pages', 'home.html'), encoding='utf-8').read()
     body = body.replace('{{CATEGORY_CARDS}}', category_cards(''))
     body = body.replace('href="https://wa.me/972509153197"', f'href="{wa()}"')
-    preload = ('<link rel="preload" as="image" href="assets/img/hero-petitfours-tall-800.webp" media="(max-width: 760px)">\n'
-               '<link rel="preload" as="image" imagesrcset="assets/img/hero-petitfours-800.webp 800w, assets/img/hero-petitfours-1200.webp 1200w, assets/img/hero-petitfours-1600.webp 1600w" imagesizes="100vw" media="(min-width: 761px)">\n')
+    preload = ('<link rel="preload" as="image" href="assets/img/hero-event-tall-800.webp" media="(max-width: 760px)">\n'
+               '<link rel="preload" as="image" imagesrcset="assets/img/hero-event-800.webp 800w, assets/img/hero-event-1200.webp 1200w, assets/img/hero-event-1600.webp 1600w" imagesizes="100vw" media="(min-width: 761px)">\n')
     faq_ld = {'@context': 'https://schema.org', '@type': 'FAQPage',
               'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in FAQ_GENERAL]}
     website = {'@context': 'https://schema.org', '@type': 'WebSite', 'name': SITE['name'], 'url': SITE['url'] + '/', 'inLanguage': 'he-IL',

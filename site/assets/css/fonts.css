@@ -1,61 +1,40 @@
-/* גופנים מקומיים (רישיון OFL), בלי פנייה לגוגל. נבחרו כדי להתאים ללוגו:
-   כותרות: Playpen Sans Hebrew, כתב יד עגול ושמנמן כמו "הכיף שבאפיה" בלוגו (משתנה 200–800)
-   טקסט:   Fredoka, עגול ונקי כמו הסלוגן "הסוד לאפיה מוצלחת" (משתנה 300–700)
-   חצים:   Arrows.woff2, חיתוך של Inter עם ← ו־→ בלבד, כי לשני הגופנים אין חצים.
-   הקובץ הלטיני של Playpen חתוך לספרות ולפיסוק בלבד (הכותרות בעברית). */
+/* גופנים מקומיים (רישיון OFL), בלי פנייה לגוגל.
+   שלושה תפקידים, לפי הכלל של מיתוג יוקרה: סריף נושא את הכותרת, כתב יד רק כמבטא קצר.
+   כותרות:   Bona Nova, סריף יוקרתי וקלאסי (400, 700)
+   מבטא:     Playpen Sans Hebrew, כתב יד עגול כמו "הכיף שבאפיה" בלוגו. רק בשורה אחת או מילים בודדות
+   טקסט:     Heebo, נקי וקריא (משתנה 300–800)
+   חצים:     Arrows.woff2, חיתוך של Inter עם ← ו־→ בלבד, כי לגופנים האלה אין חצים */
 
-/* Playpen Sans Hebrew hebrew */
-@font-face {
-  font-family: 'Playpen Sans Hebrew';
-  font-style: normal;
-  font-weight: 200 800;
-  font-display: swap;
+/* Bona Nova */
+@font-face { font-family: 'Bona Nova'; font-style: normal; font-weight: 400; font-display: swap;
+  src: url(../fonts/BonaNova-400-hebrew.woff2) format('woff2');
+  unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F; }
+@font-face { font-family: 'Bona Nova'; font-style: normal; font-weight: 400; font-display: swap;
+  src: url(../fonts/BonaNova-400-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Bona Nova'; font-style: normal; font-weight: 700; font-display: swap;
+  src: url(../fonts/BonaNova-700-hebrew.woff2) format('woff2');
+  unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F; }
+@font-face { font-family: 'Bona Nova'; font-style: normal; font-weight: 700; font-display: swap;
+  src: url(../fonts/BonaNova-700-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Bona Nova'; font-style: normal; font-weight: 300 800; font-display: swap;
+  src: url(../fonts/Arrows.woff2) format('woff2'); unicode-range: U+2190, U+2192; }
+
+/* Playpen Sans Hebrew: מבטא בכתב יד */
+@font-face { font-family: 'Playpen Sans Hebrew'; font-style: normal; font-weight: 200 800; font-display: swap;
   src: url(../fonts/Playpen-hebrew.woff2) format('woff2');
-  unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
-}
-/* Playpen Sans Hebrew digits and punctuation */
-@font-face {
-  font-family: 'Playpen Sans Hebrew';
-  font-style: normal;
-  font-weight: 200 800;
-  font-display: swap;
+  unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F; }
+@font-face { font-family: 'Playpen Sans Hebrew'; font-style: normal; font-weight: 200 800; font-display: swap;
   src: url(../fonts/Playpen-latin.woff2) format('woff2');
-  unicode-range: U+0020-0040, U+005B-0060, U+007B-007E, U+00A0-00BF, U+00D7, U+2010-2027;
-}
-/* Playpen Sans Hebrew arrows */
-@font-face {
-  font-family: 'Playpen Sans Hebrew';
-  font-style: normal;
-  font-weight: 200 800;
-  font-display: swap;
-  src: url(../fonts/Arrows.woff2) format('woff2');
-  unicode-range: U+2190, U+2192;
-}
+  unicode-range: U+0020-0040, U+005B-0060, U+007B-007E, U+00A0-00BF, U+00D7, U+2010-2027; }
 
-/* Fredoka hebrew */
-@font-face {
-  font-family: 'Fredoka';
-  font-style: normal;
-  font-weight: 300 700;
-  font-display: swap;
-  src: url(../fonts/Fredoka-hebrew.woff2) format('woff2');
-  unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
-}
-/* Fredoka latin */
-@font-face {
-  font-family: 'Fredoka';
-  font-style: normal;
-  font-weight: 300 700;
-  font-display: swap;
-  src: url(../fonts/Fredoka-latin.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* Fredoka arrows */
-@font-face {
-  font-family: 'Fredoka';
-  font-style: normal;
-  font-weight: 300 700;
-  font-display: swap;
-  src: url(../fonts/Arrows.woff2) format('woff2');
-  unicode-range: U+2190, U+2192;
-}
+/* Heebo: טקסט */
+@font-face { font-family: 'Heebo'; font-style: normal; font-weight: 300 800; font-display: swap;
+  src: url(../fonts/Heebo-hebrew.woff2) format('woff2');
+  unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F; }
+@font-face { font-family: 'Heebo'; font-style: normal; font-weight: 300 800; font-display: swap;
+  src: url(../fonts/Heebo-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Heebo'; font-style: normal; font-weight: 300 800; font-display: swap;
+  src: url(../fonts/Arrows.woff2) format('woff2'); unicode-range: U+2190, U+2192; }

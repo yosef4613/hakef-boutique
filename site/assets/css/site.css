@@ -4,22 +4,27 @@
    הזהב מופיע רק על מה שלוחצים עליו: כפתורים וקישורים (וטבעת פוקוס).
    ===================================================================== */
 :root {
-  --bg: #141210;          /* 60% */
-  --bg-2: #1a1714;
-  --surface: #211d19;
-  --surface-2: #2a251f;
-  --line: #3a332c;
-  --ink: #f4ece1;         /* 30% */
-  --ink-2: #cdbfae;
-  --ink-3: #a09282;
-  --accent: #d8b57a;      /* 10% — לחיצות בלבד */
-  --accent-hover: #e8c993;
-  --accent-ink: #1b140c;
+  /* פלטה מהלוגו: שוקולד (החום של האותיות), ורוד (המטרפה והעיגול), קרם.
+     60% שוקולד מריר · 30% קרם וורוד בהיר · 10% ורוד הלוגו, רק על מה שלוחצים */
+  --bg: #1c110c;          /* 60% */
+  --bg-2: #22150f;
+  --surface: #2a1913;
+  --surface-2: #34211a;
+  --line: #4a2f24;
+  --ink: #f8ece6;         /* 30% */
+  --ink-2: #e3cdc3;
+  --ink-3: #b0968b;
+  --blush: #f2c1bf;       /* ורוד בהיר: כתב היד והשורות הקטנות. לא צבע הלחיצה */
+  --accent: #ea7686;      /* 10% ורוד הלוגו: לחיצות בלבד */
+  --accent-hover: #f28d9b;
+  --accent-ink: #2b1209;
   --header-h: 84px;
   --radius: 18px;
   --gutter: clamp(16px, 4vw, 48px);
-  --font-display: "Playpen Sans Hebrew", "Fredoka", "Segoe UI", sans-serif;   /* כתב יד עגול, כמו הלוגו */
-  --font-body: "Fredoka", "Segoe UI", Arial, sans-serif;                        /* עגול ונקי, כמו הסלוגן */
+  /* סריף נושא את היוקרה, כתב היד (כמו הלוגו) רק כמבטא קצר, והטקסט נקי וקריא */
+  --font-display: "Bona Nova", "Times New Roman", serif;
+  --font-script: "Playpen Sans Hebrew", "Heebo", sans-serif;
+  --font-body: "Heebo", "Segoe UI", Arial, sans-serif;
   color-scheme: dark;
 }
 
@@ -39,7 +44,7 @@ body {
 }
 img { max-width: 100%; height: auto; display: block; }
 a { color: inherit; }
-h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 600; line-height: 1.18; margin: 0; }
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 400; line-height: 1.14; margin: 0; }
 p { margin: 0; }
 button, input, textarea, select { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
@@ -51,19 +56,19 @@ button, input, textarea, select { font: inherit; color: inherit; }
 
 .eyebrow {
   display: inline-flex; align-items: center; gap: 12px;
-  font-size: 0.9rem; letter-spacing: 0.06em; color: var(--ink-3); margin-bottom: 18px;
+  font-size: 0.9rem; letter-spacing: 0.06em; color: var(--blush); margin-bottom: 18px;
 }
-.eyebrow::before { content: ""; width: 28px; height: 1px; background: var(--ink-3); }
+.eyebrow::before { content: ""; width: 36px; height: 1px; background: var(--blush); opacity: 0.7; }
 
 /* ---------- כפתורים וקישורים (השכבה הקדמית) ---------- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 14px;
-  min-height: 56px; padding: 16px 30px; border-radius: 6px; border: 0;
+  min-height: 56px; padding: 16px 32px; border-radius: 999px; border: 0;
   font-weight: 700; font-size: 1.0625rem; text-decoration: none; cursor: pointer;
 }
 .btn--primary {
   background: var(--accent); color: var(--accent-ink);
-  box-shadow: 0 18px 40px -14px rgba(216, 181, 122, 0.55), 0 2px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: 0 18px 40px -14px rgba(234, 118, 134, 0.55), 0 2px 0 rgba(0, 0, 0, 0.25);
 }
 .btn--primary:hover { background: var(--accent-hover); }
 .btn span[aria-hidden] { font-size: 1.25em; line-height: 1; }
@@ -75,7 +80,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
   position: fixed; inset: 0 0 auto 0; z-index: 50; height: var(--header-h);
   border-bottom: 1px solid transparent;
 }
-.site-header.is-solid { background: rgba(20, 18, 16, 0.9); border-bottom-color: var(--line); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.site-header.is-solid { background: rgba(28, 17, 12, 0.9); border-bottom-color: var(--line); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
 .site-header__row { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
 .brand__text { display: flex; flex-direction: column; line-height: 1.15; }
@@ -118,16 +123,17 @@ html[data-motion="off"] .site-header.has-hero-logo .brand { transition: none; }
   padding-block: calc(var(--header-h) + 28px) 140px;
 }
 .hero__back { position: absolute; inset: 0; z-index: -2; }
-.hero__back img { width: 100%; height: 100%; object-fit: cover; object-position: 30% 50%; }
+.hero__back img { width: 100%; height: 100%; object-fit: cover; object-position: 22% 62%; filter: brightness(0.4) saturate(1.12) contrast(1.1); }   /* הרקע נשאר כהה (נואר): הבר מוחשך כמו באירוע ערב, והוורוד זוהר בעדינות */
 .hero::before {               /* האפלה בצד הטקסט, כדי שהמילים יהיו קריאות מיד */
   content: ""; position: absolute; inset: 0; z-index: -1;
   background:
-    linear-gradient(to left, rgba(20,18,16,0.97) 0%, rgba(20,18,16,0.9) 34%, rgba(20,18,16,0.45) 64%, rgba(20,18,16,0.2) 100%),
-    linear-gradient(to bottom, rgba(20,18,16,0.5) 0%, transparent 22%, transparent 70%, var(--bg) 100%);
+    linear-gradient(to left, rgba(28, 17, 12,0.97) 0%, rgba(28, 17, 12,0.9) 34%, rgba(28, 17, 12,0.45) 64%, rgba(28, 17, 12,0.2) 100%),
+    linear-gradient(to bottom, rgba(28, 17, 12,0.5) 0%, transparent 22%, transparent 70%, var(--bg) 100%);,
+    radial-gradient(ellipse 60% 70% at 82% 30%, rgba(176, 92, 96, 0.22), transparent 70%);
 }
 .hero__copy { max-width: 760px; }
-.hero h1 { font-size: clamp(2.5rem, 4.6vw, 4.1rem); font-weight: 650; line-height: 1.12; margin-bottom: 22px; }
-.hero h1 .soft { display: block; font-weight: 400; color: var(--ink-2); }
+.hero h1 { font-size: clamp(2.6rem, 4.7vw, 4.2rem); font-weight: 400; line-height: 1.1; margin-bottom: 22px; }
+.hero h1 .soft { display: block; margin-top: 6px; font-family: var(--font-script); font-weight: 400; color: var(--blush); }   /* כתב יד כמו הלוגו */
 .lead { font-size: clamp(1.08rem, 1.35vw, 1.27rem); color: var(--ink-2); max-width: 34em; margin-bottom: 34px; }
 .hero__action { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 30px; }
 .micro { font-size: 0.92rem; color: var(--ink-3); }
@@ -148,7 +154,7 @@ html[data-motion="off"] .site-header.has-hero-logo .brand { transition: none; }
 .hero__edge figcaption { font-size: 0.85rem; color: var(--ink-3); padding: 10px 6px 2px; }
 
 .occasions { border-block: 1px solid var(--line); background: var(--bg); }
-.occasions p { font-family: var(--font-display); font-size: clamp(1.05rem, 1.6vw, 1.3rem); color: var(--ink-2); padding-block: 30px; }
+.occasions p { font-family: var(--font-script); font-size: clamp(1.1rem, 1.7vw, 1.4rem); color: var(--blush); padding-block: 30px; }
 .occasions span { color: var(--ink-3); margin-inline: 6px; }
 
 /* ---------- סקשנים ---------- */
@@ -174,7 +180,7 @@ html[data-motion="off"] .site-header.has-hero-logo .brand { transition: none; }
 .stack__media { margin: 0; min-height: 260px; }
 .stack__media img { width: 100%; height: 100%; object-fit: cover; }
 .stack__body { padding: clamp(26px, 4vw, 56px); display: flex; flex-direction: column; justify-content: center; gap: 14px; }
-.stack__num { font-family: var(--font-display); font-weight: 300; font-size: clamp(2.6rem, 4vw, 3.8rem); color: var(--ink-3); line-height: 1; }
+.stack__num { font-family: var(--font-display); font-weight: 400; font-size: clamp(2.6rem, 4vw, 3.8rem); color: var(--ink-3); line-height: 1; }
 .stack__body h3 { font-size: clamp(1.6rem, 2.6vw, 2.3rem); }
 .stack__body p { color: var(--ink-2); font-size: 1.08rem; max-width: 28em; }
 .stations__cta { margin-top: 40px; font-size: 1.1rem; }
@@ -201,7 +207,7 @@ input[type="range"] { width: 100%; accent-color: var(--ink); height: 32px; curso
 }
 .result__kicker { color: var(--ink-3); font-size: 0.95rem; margin-bottom: 6px; }
 .result__total { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-.result__num { font-family: var(--font-display); font-size: clamp(3.4rem, 6vw, 4.8rem); font-weight: 600; line-height: 1; font-variant-numeric: lining-nums tabular-nums; }
+.result__num { font-family: var(--font-display); font-size: clamp(3.4rem, 6vw, 4.8rem); font-weight: 400; line-height: 1; font-variant-numeric: lining-nums tabular-nums; }
 .result__unit { font-size: 1.2rem; color: var(--ink-2); }
 .result__sub { color: var(--ink-2); margin: 8px 0 22px; }
 .mix { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 14px; }
@@ -262,7 +268,7 @@ input[type="range"] { width: 100%; accent-color: var(--ink); height: 32px; curso
 .g-item img { width: 100%; }
 .g-item:hover img { opacity: 0.88; }
 .lightbox { max-width: min(94vw, 1100px); max-height: 94vh; padding: 0; border: 1px solid var(--line); border-radius: 14px; background: #0c0b0a; color: var(--ink); }
-.lightbox::backdrop { background: rgba(8, 7, 6, 0.9); }
+.lightbox::backdrop { background: rgba(14, 8, 6, 0.92); }
 .lightbox img { max-height: 80vh; width: auto; max-width: 100%; margin-inline: auto; }
 .lightbox__bar { display: flex; justify-content: center; gap: 12px; padding: 12px; }
 .lightbox__bar button { width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: 1.2rem; }
@@ -296,7 +302,7 @@ input[type="range"] { width: 100%; accent-color: var(--ink); height: 32px; curso
 .closing { position: relative; isolation: isolate; overflow: hidden; padding-block: clamp(100px, 12vw, 170px); }
 .closing__back { position: absolute; inset: 0 auto 0 0; width: 50%; z-index: -2; }
 .closing__back img { width: 100%; height: 100%; object-fit: cover; }
-.closing::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to left, var(--bg) 45%, rgba(20,18,16,0.55) 75%, rgba(20,18,16,0.3) 100%); }
+.closing::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to left, var(--bg) 45%, rgba(28, 17, 12,0.55) 75%, rgba(28, 17, 12,0.3) 100%); }
 .closing__inner { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
 .closing h2 { font-size: clamp(2.3rem, 5vw, 4rem); }
 .closing p { color: var(--ink-2); font-size: 1.15rem; max-width: 30em; margin-bottom: 12px; }
@@ -366,15 +372,15 @@ input[type="range"] { width: 100%; accent-color: var(--ink); height: 32px; curso
   .hero__logo { width: 150px; margin-bottom: 6px; }
   .hero__copy > .eyebrow { display: none; }   /* בטלפון הלוגו אומר "מי", והשורה הזו דוחפת את הכפתור מתחת למסך */
   .hero .lead { margin-bottom: 22px; }
-  .hero::before { background: linear-gradient(to bottom, rgba(20,18,16,0.5) 0%, rgba(20,18,16,0.74) 30%, rgba(20,18,16,0.84) 62%, var(--bg) 100%); }
-  .hero__back img { object-position: 50% 30%; }
+  .hero::before { background: linear-gradient(to bottom, rgba(28, 17, 12,0.5) 0%, rgba(28, 17, 12,0.74) 30%, rgba(28, 17, 12,0.84) 62%, var(--bg) 100%); }
+  .hero__back img { object-position: 50% 55%; }
   .hero h1 { font-size: clamp(2.1rem, 9vw, 2.8rem); margin-bottom: 16px; }
   .hero__action { align-items: stretch; }
   .hero__action .btn { width: 100%; }
   .hero__edge { position: relative; left: auto; bottom: auto; width: min(74%, 320px); margin: 40px auto -86px; transform: rotate(-1.2deg); }
   .occasions p { padding-block: 112px 26px; }
   .closing__back { width: 100%; }
-  .closing::before { background: linear-gradient(to bottom, rgba(20,18,16,0.72), rgba(20,18,16,0.93)); }
+  .closing::before { background: linear-gradient(to bottom, rgba(28, 17, 12,0.72), rgba(28, 17, 12,0.93)); }
   .closing__inner .btn { width: 100%; }
   .gallery { columns: 2; column-gap: 10px; }
   .g-item { margin-bottom: 10px; }
@@ -419,8 +425,8 @@ html[data-motion="off"] .steps { --p: 1 !important; }
 /* =====================================================================
    עמודים פנימיים: קטלוג, קטגוריות, מוצרים, בר קינוחים, מידע
    ===================================================================== */
-.occasions a { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; }
-.occasions a:hover { color: var(--ink); border-bottom-color: var(--ink-3); }
+.occasions a { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; white-space: nowrap; }
+.occasions a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 .sep { color: var(--ink-3); margin-inline: 10px; }
 .cakes__intro .text-link { font-size: 1rem; }
 .cake h3 a { text-decoration: none; }
@@ -453,7 +459,7 @@ html[data-motion="off"] .steps { --p: 1 !important; }
 .p-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
 .p-card a { display: block; height: 100%; text-decoration: none; }
 .p-card img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: #efe8df; }
-.p-card__name { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; line-height: 1.25; padding: 14px 16px 4px; margin: 0; }
+.p-card__name { font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; line-height: 1.25; padding: 14px 16px 4px; margin: 0; }
 .p-card__text { color: var(--ink-2); font-size: 0.95rem; line-height: 1.55; padding: 0 16px 18px; }
 .p-card:hover { border-color: var(--ink-3); }
 .p-card:hover .p-card__name { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; }
@@ -551,7 +557,7 @@ html[data-motion="off"] .steps { --p: 1 !important; }
 .r-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
 .r-card a { display: flex; flex-direction: column; height: 100%; text-decoration: none; }
 .r-card img, .r-card .recipe-cover { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
-.r-card__name { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; line-height: 1.25; padding: 16px 18px 4px; margin: 0; }
+.r-card__name { font-family: var(--font-display); font-weight: 400; font-size: 1.35rem; line-height: 1.25; padding: 16px 18px 4px; margin: 0; }
 .r-card__text { color: var(--ink-2); font-size: 0.97rem; line-height: 1.6; padding: 0 18px 12px; }
 .r-card__meta { margin-top: auto; padding: 0 18px 16px; color: var(--ink-3); font-size: 0.9rem; }
 .r-card:hover { border-color: var(--ink-3); }
@@ -561,9 +567,9 @@ html[data-motion="off"] .steps { --p: 1 !important; }
 .recipe-cover {
   display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding: clamp(18px, 3vw, 32px);
   background:
-    radial-gradient(120% 90% at 85% 10%, rgba(216,181,122,0.10), transparent 60%),
-    repeating-linear-gradient(135deg, rgba(244,236,225,0.035) 0 1px, transparent 1px 14px),
-    linear-gradient(160deg, #24201b, #15120f);
+    radial-gradient(120% 90% at 85% 10%, rgba(234, 118, 134,0.10), transparent 60%),
+    repeating-linear-gradient(135deg, rgba(248, 236, 230,0.035) 0 1px, transparent 1px 14px),
+    linear-gradient(160deg, #2e1c15, #1a100b);
   border-bottom: 1px solid var(--line);
 }
 .recipe-cover__brand { font-size: 0.82rem; letter-spacing: 0.08em; color: var(--ink-3); }
@@ -658,9 +664,9 @@ html.js .wa-float.is-visible { opacity: 1; transform: none; pointer-events: auto
 /* כלל המרקר: בלי נגיעת זהב על כריכה שלא לוחצים עליה */
 .recipe-cover {
   background:
-    radial-gradient(120% 90% at 85% 10%, rgba(244, 236, 225, 0.07), transparent 60%),
-    repeating-linear-gradient(135deg, rgba(244, 236, 225, 0.035) 0 1px, transparent 1px 14px),
-    linear-gradient(160deg, #24201b, #15120f);
+    radial-gradient(120% 90% at 85% 10%, rgba(248, 236, 230, 0.07), transparent 60%),
+    repeating-linear-gradient(135deg, rgba(248, 236, 230, 0.035) 0 1px, transparent 1px 14px),
+    linear-gradient(160deg, #2e1c15, #1a100b);
 }
 
 /* "רקע, אמצע, חזית" גם בעמודים הפנימיים: צילום אמיתי ברקע הראש, והרשימה "שוברת את הקצה" לתוכו */
@@ -670,8 +676,8 @@ html.js .wa-float.is-visible { opacity: 1; transform: none; pointer-events: auto
 .page-band::before {
   content: ""; position: absolute; inset: 0; z-index: -1;
   background:
-    linear-gradient(to left, rgba(20, 18, 16, 0.96) 0%, rgba(20, 18, 16, 0.88) 45%, rgba(20, 18, 16, 0.6) 100%),
-    linear-gradient(to bottom, rgba(20, 18, 16, 0.55) 0%, transparent 30%, transparent 62%, var(--bg) 100%);
+    linear-gradient(to left, rgba(28, 17, 12, 0.96) 0%, rgba(28, 17, 12, 0.88) 45%, rgba(28, 17, 12, 0.6) 100%),
+    linear-gradient(to bottom, rgba(28, 17, 12, 0.55) 0%, transparent 30%, transparent 62%, var(--bg) 100%);
 }
 .page-band .page-head { padding-bottom: 0; }
 .overlap { position: relative; z-index: 2; margin-top: calc(-1 * clamp(56px, 6vw, 84px)); }
@@ -693,7 +699,7 @@ html.js .wa-float.is-visible { opacity: 1; transform: none; pointer-events: auto
   .product__media img { aspect-ratio: 4 / 3; }
 }
 @media (max-width: 760px) {
-  .page-band::before { background: linear-gradient(to bottom, rgba(20, 18, 16, 0.72), rgba(20, 18, 16, 0.86) 60%, var(--bg)); }
+  .page-band::before { background: linear-gradient(to bottom, rgba(28, 17, 12, 0.72), rgba(28, 17, 12, 0.86) 60%, var(--bg)); }
 }
 
 /* הכפתור הצף מופיע ונעלם מיד, בלי החלקה: כך במסך עם הרצועה המונפשת רק דבר אחד זז */
