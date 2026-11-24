@@ -542,16 +542,18 @@ def build_bar_page(products):
            body, extra_ld=[crumbs_ld, service, faq_ld], og_img='ev-bar-full-1200.webp')
 
 
-def simple_page(path, title, desc, h1, eyebrow, inner, crumbs_name, back=None):
+def simple_page(path, title, desc, h1, eyebrow, inner, crumbs_name, back=None, intro='', overlap=False):
+    """intro: משפט פתיחה בתוך הרצועה העליונה. overlap: התוכן עולה לתוך שולי התמונה (שבירת הקצה)."""
     root = '../' * len([x for x in path.split('/') if x])
     crumbs, crumbs_ld = breadcrumbs(root, [(crumbs_name, None)])
+    intro_html = f'\n    <p class="lead">{intro}</p>' if intro else ''
     head = f'''  <section class="page-head container">
     <p class="eyebrow">{eyebrow}</p>
-    <h1>{h1}</h1>
+    <h1>{h1}</h1>{intro_html}
   </section>'''
     top = page_band(root, back, crumbs, head) if back else crumbs + '\n' + head
     body = f'''{top}
-  <div class="container prose">
+  <div class="container prose{' overlap' if overlap else ''}">
 {inner.replace("{root}", root)}
   </div>'''
     layout(path, title, desc, body, extra_ld=[crumbs_ld])
@@ -576,7 +578,6 @@ def build_static_pages():
     simple_page('contact/', 'צור קשר | הזמנות והצעות מחיר בוואטסאפ | הכיף שבאפיה',
                 'להזמנת בר קינוחים, מגשי פטיפורים ועוגות מעוצבות: וואטסאפ 050-915-3197. ירושלים והסביבה.',
                 'צרו קשר: הזמנות והצעות מחיר', 'צור קשר', f'''
-    <p class="lead">הדרך הכי מהירה להזמין היא וואטסאפ. שלחו לנו מה אתם מתכננים, ונחזור אליכם עם הצעה אישית.</p>
     <div class="contact-cards">
       <div class="contact-card"><h2>וואטסאפ</h2><p dir="ltr" class="contact-card__num">{SITE["phone"]}</p>
         <a class="btn btn--wa" href="{wa()}" target="_blank" rel="noopener" data-wa>{WA_ICON} שליחת הודעה בוואטסאפ</a></div>
@@ -584,7 +585,8 @@ def build_static_pages():
         <h2>מייל</h2><p><a class="text-link" href="mailto:{SITE["email"]}">{SITE["email"]}</a></p></div>
       <div class="contact-card"><h2>אזור שירות</h2><p>{SITE["area"]}. משלוח מגשים או הקמת בר קינוחים במקום האירוע.</p>
         <p><a class="text-link" href="{{root}}#plan">רוצים הערכה מהירה? מתכנן הבר ←</a></p></div>
-    </div>''', 'צור קשר', back=('ev-bar-full', 1600, 1200))
+    </div>''', 'צור קשר', back=('ev-bar-full', 1600, 1200),
+                intro='הדרך הכי מהירה להזמין היא וואטסאפ. שלחו לנו מה אתם מתכננים, ונחזור אליכם עם הצעה אישית.', overlap=True)
 
     simple_page('הצהרת-נגישות/', 'הצהרת נגישות | הכיף שבאפיה',
                 'הצהרת הנגישות של אתר הכיף שבאפיה: התאמות הנגישות באתר ודרכי פנייה בנושא נגישות.',
