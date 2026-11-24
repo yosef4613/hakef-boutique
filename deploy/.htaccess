@@ -1,0 +1,48 @@
+# הכיף שבאפיה: נוצר אוטומטית על ידי build/build.py
+Options -MultiViews
+DirectoryIndex index.html
+ErrorDocument 404 /404.html
+RewriteEngine On
+# HTTPS ובלי www
+RewriteCond %{HTTPS} !=on [OR]
+RewriteCond %{HTTP_HOST} ^www\. [NC]
+RewriteRule ^(.*)$ https://hakef.com/$1 [R=301,L,NE]
+# כתובות ישנות
+RewriteRule ^product-category/(כללי|שוקולד|קרמים-ומליות|קישוטים-אכילים)/?.*$ /shop/ [R=301,L,NE]
+RewriteRule ^product-category/עוגות/(עוגות-בהזמנה|עוגות-מוס)/?$ /product-category/עוגות/ [R=301,L,NE]
+RewriteRule ^product-category/פטיפורים/(קינוחים-אישיים|פאים-אישיים)/?$ /product-category/פטיפורים/ [R=301,L,NE]
+RewriteRule ^product-tag/.*$ /shop/ [R=301,L,NE]
+RewriteRule ^(מתכונים|recipes)/?$ / [R=301,L,NE]
+RewriteRule ^(סורבה-מנגו-אננס-בקישוט-פסיפלורה|עוגיות-שוקולדציפס-נוגט|עוגת-קפה-נוגט|שוקלד-קרנץ|מוס-שוקולד|elementor-942|עוגת-גבינה)/?$ / [R=301,L,NE]
+RewriteRule ^(מדיניות-החזרים|cart|checkout|my-account)/?.*$ /contact/ [R=301,L,NE]
+RewriteRule ^(category|tag|author|20[0-9][0-9])/.*$ / [R=301,L,NE]
+RewriteRule ^product/מיזרה-צבעוני-200-גרם/?$ /shop/ [R=301,L,NE]
+RewriteRule ^product/שמבלות/?$ /shop/ [R=301,L,NE]
+RewriteRule ^product/קליק-מטאלי/?$ /shop/ [R=301,L,NE]
+RewriteRule ^product/סוכר-נצנצ-לקישוט/?$ /shop/ [R=301,L,NE]
+RewriteRule ^product/פניני-קראנצ-חלבי/?$ /shop/ [R=301,L,NE]
+RewriteRule ^product/גליליות-מיני/?$ /shop/ [R=301,L,NE]
+RewriteRule ^product/קרם-פסק-זמן/?$ /shop/ [R=301,L,NE]
+RewriteRule ^product/קרם-נוגט/?$ /shop/ [R=301,L,NE]
+RewriteRule ^product/קרם-וניל/?$ /shop/ [R=301,L,NE]
+RewriteRule ^product/קרם-קינדר-פרווה/?$ /shop/ [R=301,L,NE]
+RewriteRule ^product/מארז-קישוטים-לילדים/?$ /shop/ [R=301,L,NE]
+RewriteRule ^product/נשיקות-ממותגות/?$ /shop/ [R=301,L,NE]
+# וורדפרס ישן: לא קיים יותר
+RewriteRule ^(wp-admin|wp-login\.php|xmlrpc\.php|feed)(/.*)?$ / [R=301,L]
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType text/css "access plus 1 week"
+  ExpiresByType application/javascript "access plus 1 week"
+  ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/xml
+</IfModule>
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

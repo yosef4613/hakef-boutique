@@ -225,14 +225,22 @@
   }
 
   /* ---------- קישורי "הזמנה": מסמנים מראש מה מזמינים ---------- */
+  var ORDER_MAP = { bar: 'בר פטיפורים מעוצב', cake: 'עוגה מעוצבת' };
+  function applyOrder(kind) {
+    var box = document.querySelector('#request-form input[name="what"][value="' + ORDER_MAP[kind] + '"]');
+    if (box) box.checked = true;
+  }
   $$('[data-order]').forEach(function (a) {
     a.addEventListener('click', function () {
       var kind = a.getAttribute('data-order');
-      var map = { bar: 'בר פטיפורים מעוצב', cake: 'עוגה מעוצבת' };
-      var box = document.querySelector('#request-form input[name="what"][value="' + map[kind] + '"]');
-      if (box) box.checked = true;
+      applyOrder(kind);
+      try { sessionStorage.setItem('hakef-order', kind); } catch (e) {}
     });
   });
+  try {
+    var pending = sessionStorage.getItem('hakef-order');
+    if (pending && $('#request-form')) { applyOrder(pending); sessionStorage.removeItem('hakef-order'); }
+  } catch (e) {}
 
   /* ---------- שליחת הבקשה: וואטסאפ (ובמייל כחלופה) ---------- */
   var req = $('#request-form');
