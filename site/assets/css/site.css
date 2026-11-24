@@ -139,11 +139,12 @@ html[data-motion="off"] .site-header.has-hero-logo .brand { transition: none; }
   position: absolute; z-index: 2; margin: 0;
   left: max(var(--gutter), calc((100vw - 1240px) / 2 + 48px));
   bottom: 0; transform: translateY(42%) rotate(-1.6deg);
-  width: clamp(300px, 29vw, 430px);
+  width: clamp(220px, 19vw, 300px);   /* כרטיס לגובה: מראה את הבר כולו, מקשת הפרחים ועד השולחן */
   background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px;
   box-shadow: 0 50px 90px -30px rgba(0,0,0,0.9), 0 0 0 1px rgba(0,0,0,0.3);
 }
-.hero__edge img { border-radius: 8px; aspect-ratio: 16 / 10; object-fit: cover; width: 100%; }
+.hero__edge img { border-radius: 8px; aspect-ratio: 4 / 5; object-fit: cover; width: 100%; }
+@media (min-width: 1200px) { .hero__edge { transform: translateY(8%) rotate(-1.6deg); } }   /* מסך רחב: יש מקום משמאל, אז רוב הבר נראה כבר במסך הראשון */
 .hero__edge figcaption { font-size: 0.85rem; color: var(--ink-3); padding: 10px 6px 2px; }
 
 .occasions { border-block: 1px solid var(--line); background: var(--bg); }
@@ -370,7 +371,7 @@ input[type="range"] { width: 100%; accent-color: var(--ink); height: 32px; curso
   .hero h1 { font-size: clamp(2.1rem, 9vw, 2.8rem); margin-bottom: 16px; }
   .hero__action { align-items: stretch; }
   .hero__action .btn { width: 100%; }
-  .hero__edge { position: relative; left: auto; bottom: auto; width: auto; margin: 40px 4px -86px; transform: rotate(-1.2deg); }
+  .hero__edge { position: relative; left: auto; bottom: auto; width: min(74%, 320px); margin: 40px auto -86px; transform: rotate(-1.2deg); }
   .occasions p { padding-block: 112px 26px; }
   .closing__back { width: 100%; }
   .closing::before { background: linear-gradient(to bottom, rgba(20,18,16,0.72), rgba(20,18,16,0.93)); }
