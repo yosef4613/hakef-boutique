@@ -41,6 +41,16 @@ add_action( 'template_redirect', function () {
 	if ( is_singular( 'recipe' ) || is_post_type_archive( 'recipe' ) || is_404() || is_robots() ) {
 		return;
 	}
+	// דף הבית הוא קובץ סטטי (index.html). אם בכל זאת וורדפרס התבקש להציג אותו, מגישים את הקובץ, בלי הפניה במעגל.
+	if ( is_front_page() || is_home() ) {
+		$static = ABSPATH . 'index.html';
+		if ( is_readable( $static ) ) {
+			header( 'Content-Type: text/html; charset=utf-8' );
+			readfile( $static ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+			exit;
+		}
+		return; // לפני העלייה לאוויר: index.php מציג הודעה קצרה
+	}
 	if ( get_query_var( 'sitemap' ) || get_query_var( 'sitemap-subtype' ) || get_query_var( 'sitemap-stylesheet' ) ) {
 		return;
 	}
