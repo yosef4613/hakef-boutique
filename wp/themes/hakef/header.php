@@ -11,7 +11,7 @@
 <link rel="preload" href="/assets/fonts/BonaNova-400-hebrew.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/Heebo-hebrew.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/fonts.css?v=5dffb2b5">
-<link rel="stylesheet" href="/assets/css/site.css?v=88e0243c">
+<link rel="stylesheet" href="/assets/css/site.css?v=29a64618">
 <script>
   /* העדפת תנועה: לפני הציור הראשון, כדי שלא יהיה הבהוב */
   (function () {

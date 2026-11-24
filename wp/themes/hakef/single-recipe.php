@@ -123,6 +123,9 @@ echo $crumbs; // phpcs:ignore WordPress.Security.EscapeOutput -- נבנה עם e
     <?php endif; ?>
   </article>
 <?php
+if ( function_exists( 'hakef_talk_section' ) ) {
+	echo hakef_talk_section( $pid ); // phpcs:ignore WordPress.Security.EscapeOutput -- נבנה עם esc_*
+}
 echo hakef_cta_band(); // phpcs:ignore
 $more = get_posts( array( 'post_type' => 'recipe', 'posts_per_page' => 3, 'post__not_in' => array( $pid ), 'orderby' => 'rand' ) );
 if ( $more ) {

@@ -341,6 +341,25 @@
     });
   }
 
+  /* ---------- תגובות ורשימת תפוצה ----------
+     הסקריפט מסמן שהטופס מולא בדפדפן אמיתי (תוכנות ספאם בדרך כלל לא מריצות אותו),
+     ובודק לפני שליחה שהתגובה בעברית ובלי קישורים, כדי שלא יאבד מה שנכתב. */
+  $$('form[data-human]').forEach(function (f) {
+    var mark = function () { if (f.elements.hakef_ts && f.elements.hakef_js) f.elements.hakef_js.value = f.elements.hakef_ts.value; };
+    f.addEventListener('input', mark);
+    f.addEventListener('submit', function (e) {
+      mark();
+      var t = f.elements.comment;
+      if (!t) return;
+      var v = t.value.trim();
+      var ok = /[֐-׿]/.test(v) && !/https?:\/\/|www\./i.test(v);
+      if (!check(t, ok)) { e.preventDefault(); t.focus(); }
+    });
+    if (f.elements.comment) {
+      f.elements.comment.addEventListener('input', function () { var w = f.elements.comment.closest('.field'); if (w) w.classList.remove('is-invalid'); });
+    }
+  });
+
   /* הדפסת מתכון */
   $$('[data-print]').forEach(function (b) { b.addEventListener('click', function () { window.print(); }); });
 

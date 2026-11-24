@@ -42,6 +42,11 @@ get_header();
     <p class="lead">מתכונים חדשים בדרך.</p>
     <?php endif; ?>
   </section>
+  <?php if ( function_exists( 'hakef_news_box' ) ) : ?>
+  <section class="container section--tight news-band" aria-label="רשימת התפוצה">
+    <?php echo hakef_news_box( get_post_type_archive_link( 'recipe' ) ); // phpcs:ignore WordPress.Security.EscapeOutput -- נבנה עם esc_* ?>
+  </section>
+  <?php endif; ?>
 <?php
 echo hakef_cta_band(); // phpcs:ignore
 get_footer();
