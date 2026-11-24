@@ -310,6 +310,10 @@ input[type="range"] { width: 100%; accent-color: var(--ink); height: 32px; curso
 .motion-toggle--footer { margin-top: 16px; }
 .footer__bottom { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 0.9rem; }
 .footer__bottom p { color: var(--ink-3); }
+.footer__bottom { padding-bottom: 92px; }   /* שכפתור הוואטסאפ הצף לא יכסה את השורה האחרונה */
+.footer__built { flex-basis: 100%; }
+.footer__credit { white-space: nowrap; color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.footer__credit:hover { color: var(--accent); }
 
 /* ---------- כפתור דביק בטלפון ---------- */
 .mobile-cta { display: none; }

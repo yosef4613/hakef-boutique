@@ -111,6 +111,9 @@ def jsonld(obj):
     return '<script type="application/ld+json">' + json.dumps(obj, ensure_ascii=False) + '</script>'
 
 
+# בונה האתר: מופיע בתחתית כל עמוד ובנתונים שגוגל קורא
+BUILDER = {'name': 'יוסף יהודה גורדון', 'url': 'https://yosef4613.github.io/hakef-boutique/'}
+
 BUSINESS = {
     '@context': 'https://schema.org', '@type': 'Bakery', '@id': SITE['url'] + '/#business',
     'name': SITE['name'],
@@ -269,6 +272,7 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
   <div class="container footer__bottom">
     <p>© <span data-year>2026</span> {SITE['name']} · {SITE['area']}</p>
     <p>צילומי סטודיו: Esther Andibo</p>
+    <p class="footer__built">עיצוב ובניית האתר: <a class="footer__credit" href="{BUILDER['url']}" target="_blank" rel="noopener">{BUILDER['name']}</a></p>
   </div>
 </footer>
 
@@ -368,7 +372,8 @@ def build_home(products):
                '<link rel="preload" as="image" imagesrcset="assets/img/hero-petitfours-800.webp 800w, assets/img/hero-petitfours-1200.webp 1200w, assets/img/hero-petitfours-1600.webp 1600w" imagesizes="100vw" media="(min-width: 761px)">\n')
     faq_ld = {'@context': 'https://schema.org', '@type': 'FAQPage',
               'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in FAQ_GENERAL]}
-    website = {'@context': 'https://schema.org', '@type': 'WebSite', 'name': SITE['name'], 'url': SITE['url'] + '/', 'inLanguage': 'he-IL'}
+    website = {'@context': 'https://schema.org', '@type': 'WebSite', 'name': SITE['name'], 'url': SITE['url'] + '/', 'inLanguage': 'he-IL',
+               'creator': {'@type': 'Person', 'name': BUILDER['name'], 'url': BUILDER['url']}}
     layout('', 'בר קינוחים, פטיפורים ועוגות מעוצבות בירושלים | הכיף שבאפיה',
            'בר קינוחים ופטיפורים מעוצב, מגשי פטיפורים ועוגות מעוצבות בהזמנה אישית לבר מצווה, בת מצווה, ברית ושבע ברכות בירושלים והסביבה. כשרות מהודרת. הצעת מחיר בוואטסאפ.',
            body, extra_ld=[BUSINESS, website, faq_ld], preload=preload)

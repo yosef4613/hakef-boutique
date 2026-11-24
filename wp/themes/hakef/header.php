@@ -11,7 +11,7 @@
 <link rel="preload" href="/assets/fonts/Playpen-hebrew.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/Fredoka-hebrew.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/fonts.css?v=0cddc6be">
-<link rel="stylesheet" href="/assets/css/site.css?v=a01df662">
+<link rel="stylesheet" href="/assets/css/site.css?v=a454f7a3">
 <script>
   /* העדפת תנועה: לפני הציור הראשון, כדי שלא יהיה הבהוב */
   (function () {
