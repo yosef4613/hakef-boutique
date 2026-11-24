@@ -642,11 +642,11 @@ def build_htaccess():
              'Options -MultiViews', 'DirectoryIndex index.html index.php',
              'ErrorDocument 404 /404.html', 'RewriteEngine On', 'RewriteBase /',
              '# HTTPS ובלי www', 'RewriteCond %{HTTPS} !=on [OR]', 'RewriteCond %{HTTP_HOST} ^www\\. [NC]',
-             'RewriteRule ^(.*)$ https://hakef.com/$1 [R=301,L,NE]',
+             'RewriteRule ^(.*)$ https://hakef.com/$1 [R=301,L]',
              '# אבטחה: חסימת xmlrpc', 'RewriteRule ^xmlrpc\\.php$ - [F,L]',
              '# כתובות ישנות']
     for src, dst in rules:
-        lines.append(f'RewriteRule ^{src}$ /{dst} [R=301,L,NE]')
+        lines.append(f'RewriteRule ^{src}$ /{urllib.parse.quote(dst)} [R=301,L,NE]')  # יעד מקודד, כדי שכותרת Location תהיה ASCII תקני
     lines += ['# וורדפרס: כל מה שאינו קובץ או תיקייה קיימים (המתכונים, ממשק הניהול)',
               'RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]',
               'RewriteRule ^index\\.php$ - [L]', 'RewriteCond %{REQUEST_FILENAME} !-f', 'RewriteCond %{REQUEST_FILENAME} !-d',

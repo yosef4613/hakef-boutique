@@ -662,3 +662,7 @@ html.js .wa-float.is-visible { opacity: 1; transform: none; pointer-events: auto
 
 /* הכפתור הצף מופיע ונעלם מיד, בלי החלקה: כך במסך עם הרצועה המונפשת רק דבר אחד זז */
 html.js .wa-float, html.js .wa-float.is-visible { transition: none; transform: none; }
+
+/* פס הניהול של וורדפרס (רק למשתמשים מחוברים) לא מסתיר את הכותרת */
+body.admin-bar .site-header { top: 32px; }
+@media (max-width: 782px) { body.admin-bar .site-header { top: 46px; } }
