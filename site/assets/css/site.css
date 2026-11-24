@@ -585,3 +585,26 @@ html[data-motion="off"] .steps { --p: 1 !important; }
 .r-card .recipe-cover { justify-content: center; align-items: center; }
 .r-card .recipe-cover__title { display: none; }
 .r-card .recipe-cover__brand { font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 0.04em; border-block: 1px solid var(--line); padding: 8px 18px; }
+
+/* =====================================================================
+   וואטסאפ: ירוק בולט, כי זה ערוץ ההזמנות העיקרי.
+   סמל וטקסט ירוק כהה על ירוק בהיר: ניגודיות 7.8:1, עומד בתקן הנגישות.
+   ===================================================================== */
+:root { --wa: #25D366; --wa-hover: #45e283; --wa-ink: #04291a; }
+.site-header .icon-link[data-wa] { background: var(--wa); border-color: var(--wa); color: var(--wa-ink); width: 44px; height: 44px; box-shadow: 0 6px 18px -6px rgba(37, 211, 102, 0.6); }
+.site-header .icon-link[data-wa] svg { width: 24px; height: 24px; }
+.site-header .icon-link[data-wa]:hover { background: var(--wa-hover); border-color: var(--wa-hover); }
+.wa-float {
+  background: var(--wa); color: var(--wa-ink); border: 0; height: 58px; padding: 0 22px 0 18px; gap: 10px;
+  font-size: 1.08rem; font-weight: 800; box-shadow: 0 18px 40px -12px rgba(37, 211, 102, 0.6), 0 2px 0 rgba(0, 0, 0, 0.25);
+}
+.wa-float svg { width: 26px; height: 26px; }
+.wa-float:hover { background: var(--wa-hover); border-color: transparent; }
+.mobile-cta .icon-link--box { background: var(--wa); border-color: var(--wa); color: var(--wa-ink); width: 56px; }
+.mobile-cta .icon-link--box svg { width: 28px; height: 28px; }
+.btn--wa { background: var(--wa); color: var(--wa-ink); box-shadow: 0 18px 40px -14px rgba(37, 211, 102, 0.55), 0 2px 0 rgba(0, 0, 0, 0.25); }
+.btn--wa:hover { background: var(--wa-hover); }
+.btn--wa svg { flex: none; width: 24px; height: 24px; }
+.text-link--wa { color: var(--wa); }
+.text-link--wa:hover { color: var(--wa-hover); }
+@media (max-width: 760px) { .btn--wa { width: 100%; } }

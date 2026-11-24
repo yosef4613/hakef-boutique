@@ -232,7 +232,7 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
     <div>
       <h2 class="footer__title">דברו איתנו</h2>
       <ul class="footer__list">
-        <li><a class="text-link" href="{wa()}" target="_blank" rel="noopener" data-wa>וואטסאפ: <span dir="ltr">{SITE['phone']}</span></a></li>
+        <li><a class="text-link text-link--wa" href="{wa()}" target="_blank" rel="noopener" data-wa>וואטסאפ: <span dir="ltr">{SITE['phone']}</span></a></li>
         <li><a class="text-link" href="tel:{SITE['tel']}">חיוג: <span dir="ltr">{SITE['phone']}</span></a></li>
         <li><a class="text-link" href="mailto:{SITE['email']}">{SITE['email']}</a></li>
       </ul>
@@ -400,7 +400,7 @@ def build_category(c, products):
     <p class="eyebrow">{c["name"]} · {SITE["area"]}</p>
     <h1>{c["h1"]}</h1>
     <div class="page-head__intro">{intro}</div>
-    <a class="btn btn--primary" href="{wa("שלום, אשמח לקבל הצעת מחיר על " + c["name"])}" target="_blank" rel="noopener" data-wa>לקבלת הצעת מחיר בוואטסאפ <span aria-hidden="true">←</span></a>
+    <a class="btn btn--wa" href="{wa("שלום, אשמח לקבל הצעת מחיר על " + c["name"])}" target="_blank" rel="noopener" data-wa>{WA_ICON} לקבלת הצעת מחיר בוואטסאפ</a>
   </section>
   <section class="container section--tight" aria-label="{c["name"]}">
     {product_grid(root, items, 'h2')}
@@ -439,7 +439,7 @@ def build_product(p, products):
       <h2 class="product__sub">מה אפשר להתאים</h2>
       <ul class="custom-list"><li>טעמים</li><li>צבעים ועיצוב</li><li>כיתוב או שם</li><li>כמות וגודל</li></ul>
       <div class="product__cta">
-        <a class="btn btn--primary" href="{wa(msg)}" target="_blank" rel="noopener" data-wa>לקבלת הצעת מחיר בוואטסאפ <span aria-hidden="true">←</span></a>
+        <a class="btn btn--wa" href="{wa(msg)}" target="_blank" rel="noopener" data-wa>{WA_ICON} לקבלת הצעת מחיר בוואטסאפ</a>
         <p class="micro">או <a class="text-link" href="{root}#plan">תכננו בר קינוחים שלם במתכנן</a></p>
       </div>
     </div>
@@ -486,7 +486,7 @@ def build_bar_page(products):
     ev_html = '\n'.join(f'''<section class="event-block" id="{eid}" aria-labelledby="{eid}-t">
       <figure>{img(root, k, w, h, t, "(max-width: 900px) 92vw, 480px")}</figure>
       <div><h2 id="{eid}-t">{t}</h2>{"".join(f"<p>{esc(x)}</p>" for x in txt)}
-        <a class="text-link" href="{wa("שלום, אשמח להצעת מחיר ל" + t)}" target="_blank" rel="noopener" data-wa>לשאלה בוואטסאפ ←</a></div>
+        <a class="text-link text-link--wa" href="{wa("שלום, אשמח להצעת מחיר ל" + t)}" target="_blank" rel="noopener" data-wa>לשאלה בוואטסאפ ←</a></div>
     </section>''' for eid, t, k, w, h, txt in events)
     faq_items = [
         ('מה ההבדל בין בר קינוחים, בר מתוקים ושולחן קינוחים?', 'בפועל מדובר באותו רעיון: שולחן מעוצב שמרכז את הקינוחים של האירוע במקום אחד. אצלנו הוא כולל פטיפורים, קינוחים אישיים ועוגה מרכזית, ומותאם לצבעים ולטעמים שלכם.'),
@@ -558,7 +558,7 @@ def build_static_pages():
     <p class="lead">הדרך הכי מהירה להזמין היא וואטסאפ. שלחו לנו מה אתם מתכננים, ונחזור אליכם עם הצעה אישית.</p>
     <div class="contact-cards">
       <div class="contact-card"><h2>וואטסאפ</h2><p dir="ltr" class="contact-card__num">{SITE["phone"]}</p>
-        <a class="btn btn--primary" href="{wa()}" target="_blank" rel="noopener" data-wa>שליחת הודעה בוואטסאפ <span aria-hidden="true">←</span></a></div>
+        <a class="btn btn--wa" href="{wa()}" target="_blank" rel="noopener" data-wa>{WA_ICON} שליחת הודעה בוואטסאפ</a></div>
       <div class="contact-card"><h2>טלפון</h2><p><a class="text-link" href="tel:{SITE["tel"]}" dir="ltr">{SITE["phone"]}</a></p>
         <h2>מייל</h2><p><a class="text-link" href="mailto:{SITE["email"]}">{SITE["email"]}</a></p></div>
       <div class="contact-card"><h2>אזור שירות</h2><p>{SITE["area"]}. משלוח מגשים או הקמת בר קינוחים במקום האירוע.</p>
@@ -599,7 +599,7 @@ def build_404():
 <body><main class="container prose" style="padding-block:120px"><p class="eyebrow">404</p><h1>העמוד הזה לא נמצא</h1>
 <p class="lead">אולי הוא עבר מקום. אפשר להמשיך מכאן:</p>
 <p><a class="btn btn--primary" href="/">לדף הבית <span aria-hidden="true">←</span></a></p>
-<ul class="custom-list custom-list--wide"><li><a class="text-link" href="/בר-קינוחים-לאירועים/">בר קינוחים לאירועים</a></li><li><a class="text-link" href="/shop/">כל המוצרים</a></li><li><a class="text-link" href="{wa()}">וואטסאפ: {SITE["phone"]}</a></li></ul>
+<ul class="custom-list custom-list--wide"><li><a class="text-link" href="/בר-קינוחים-לאירועים/">בר קינוחים לאירועים</a></li><li><a class="text-link" href="/shop/">כל המוצרים</a></li><li><a class="text-link text-link--wa" href="{wa()}">וואטסאפ: {SITE["phone"]}</a></li></ul>
 </main></body></html>'''
     open(os.path.join(OUT, '404.html'), 'w', encoding='utf-8').write(doc)
 
@@ -692,9 +692,16 @@ def recipe_cover(title):
             f'<span class="recipe-cover__title">{esc(title)}</span></div>')
 
 
+def recipe_visual(root, r, sizes, lazy=True):
+    """תמונת המתכון, או כריכה מעוצבת כשאין תמונה (כמו hakef_recipe_visual בתבנית הוורדפרס)."""
+    if r.get('img'):
+        return img(root, r['img'], r['imgW'], r['imgH'], r.get('alt', r['title']), sizes, lazy=lazy)
+    return recipe_cover(r['title'])
+
+
 def recipe_card(root, r, heading='h2'):
     meta = f'<span class="r-card__meta">{esc(r["time"])}</span>' if r.get('time') else ''
-    return (f'<article class="r-card"><a href="{root}מתכונים/{r["slug"]}/">{recipe_cover(r["title"])}'
+    return (f'<article class="r-card"><a href="{root}מתכונים/{r["slug"]}/">{recipe_visual(root, r, "(max-width: 760px) 92vw, 380px")}'
             f'<{heading} class="r-card__name">{esc(r["title"])}</{heading}><p class="r-card__text">{esc(r["summary"])}</p>{meta}</a></article>')
 
 
@@ -766,7 +773,7 @@ def build_recipes_preview():
       <ul class="recipe__facts">{facts}</ul>
       <button class="text-link recipe__print" type="button" data-print>הדפסת המתכון</button>
     </header>
-    <figure class="recipe__media">{recipe_cover(r["title"])}</figure>
+    <figure class="recipe__media">{recipe_visual(root, r, "(max-width: 900px) 92vw, 620px", lazy=False)}</figure>
     <div class="recipe__body">
       <section class="recipe__ingredients" aria-labelledby="ing-t"><h2 id="ing-t">מצרכים</h2>{ing_html}</section>
       <section class="recipe__steps" aria-labelledby="steps-t"><h2 id="steps-t">אופן ההכנה</h2>{st_html}</section>
@@ -781,8 +788,10 @@ def build_recipes_preview():
                   'recipeInstructions': [{'@type': 'HowToStep', 'text': x} for t, x in steps if t == 'item']}
         if r.get('yield'):
             rec_ld['recipeYield'] = r['yield']
+        if r.get('img'):
+            rec_ld['image'] = [SITE['url'] + '/assets/img/' + urllib.parse.quote(f'{r["img"]}-{widths(r["img"])[-1]}.webp')]
         layout(path, f'{r["title"]} – מתכון | {SITE["name"]}', (r['summary'] + ' מצרכים ואופן הכנה, צעד אחר צעד.')[:160],
-               body, extra_ld=[crumbs_ld, rec_ld])
+               body, extra_ld=[crumbs_ld, rec_ld], og_img=f'{r["img"]}-800.webp' if r.get('img') else 'og-image.jpg')
 
 def main():
     products = json.load(open(os.path.join(ROOT, 'build', 'data', 'products.json'), encoding='utf-8'))
