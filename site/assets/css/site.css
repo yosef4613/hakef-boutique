@@ -56,9 +56,9 @@ button, input, textarea, select { font: inherit; color: inherit; }
 
 .eyebrow {
   display: inline-flex; align-items: center; gap: 12px;
-  font-size: 0.9rem; letter-spacing: 0.06em; color: var(--blush); margin-bottom: 18px;
+  font-size: 0.9rem; letter-spacing: 0; color: var(--ink-3); margin-bottom: 18px;
 }
-.eyebrow::before { content: ""; width: 36px; height: 1px; background: var(--blush); opacity: 0.7; }
+.eyebrow::before { content: ""; width: 36px; height: 1px; background: var(--ink-3); opacity: 0.7; }
 
 /* ---------- כפתורים וקישורים (השכבה הקדמית) ---------- */
 .btn {
@@ -128,8 +128,7 @@ html[data-motion="off"] .site-header.has-hero-logo .brand { transition: none; }
   content: ""; position: absolute; inset: 0; z-index: -1;
   background:
     linear-gradient(to left, rgba(28, 17, 12,0.97) 0%, rgba(28, 17, 12,0.9) 34%, rgba(28, 17, 12,0.45) 64%, rgba(28, 17, 12,0.2) 100%),
-    linear-gradient(to bottom, rgba(28, 17, 12,0.5) 0%, transparent 22%, transparent 70%, var(--bg) 100%);,
-    radial-gradient(ellipse 60% 70% at 82% 30%, rgba(176, 92, 96, 0.22), transparent 70%);
+    linear-gradient(to bottom, rgba(28, 17, 12,0.5) 0%, transparent 22%, transparent 70%, var(--bg) 100%);
 }
 .hero__copy { max-width: 760px; }
 .hero h1 { font-size: clamp(2.6rem, 4.7vw, 4.2rem); font-weight: 400; line-height: 1.1; margin-bottom: 22px; }
@@ -764,4 +763,138 @@ body.admin-bar .site-header { top: 32px; }
   .page-head__intro > p { order: 2; margin: 0 0 14px; }
   .page-head:has(.page-head__intro) > .btn { order: 3; margin: 4px 0 22px; }
   .page-head__intro > p ~ p { order: 4; }
+}
+
+/* =====================================================================
+   סבב תיקונים אחרי ביקורת חיצונית (עיצוב, חוויית משתמש, כללי הסרטון)
+   ===================================================================== */
+h1, h2, h3 { text-wrap: balance; }   /* בלי מילה יתומה בשורה האחרונה */
+.nowrap { white-space: nowrap; }
+
+/* כפתור ראשי אחד: ורוד בכל העמודים, גם כשהוא פותח וואטסאפ (הסמל בתוכו). הירוק נשאר לסמל ולשליחה הסופית */
+.btn--primary svg { flex: none; width: 22px; height: 22px; }
+
+/* שדות טופס עם גבול שרואים (ניגודיות 3.8:1 מול הכרטיס), ותיבות סימון בצבע של מה שלוחצים עליו */
+:root { --field-line: #8f7262; }
+.request input:not([type="checkbox"]):not([type="radio"]), .request textarea,
+.talk__form input[type="text"], .talk__form input[type="email"], .talk__form textarea,
+.news input[type="text"], .news input[type="email"] { border-color: var(--field-line); }
+.consent input, .checklist input { accent-color: var(--accent); }
+
+/* מתג התנועה: בתחתית העמוד, ובטלפון גם בתוך התפריט (לא בכותרת) */
+.nav-motion { display: none; }
+@media (max-width: 900px) {
+  .nav-open .main-nav .nav-motion { display: block; padding: 16px 0 6px; }
+  .nav-open .main-nav .motion-toggle--nav { width: auto; padding: 0 16px; }
+  .nav-open .main-nav .motion-toggle--nav .motion-toggle__label { position: static; width: auto; height: auto; clip: auto; }
+  .nav-open .main-nav ul { max-height: calc(100dvh - var(--header-h)); overflow-y: auto; overscroll-behavior: contain; }
+}
+
+/* רצועת האירועים: גוון משלה, כדי שהכרטיס מהמסך הראשון ייראה גולש לתוכה. בלי נקודות שנשארות בסוף שורה */
+.occasions { background: var(--bg-2); }
+.occasions__list {
+  list-style: none; margin: 0; padding: 30px 0; display: flex; flex-wrap: wrap; gap: 8px 28px;
+  font-family: var(--font-script); font-size: clamp(1.1rem, 1.7vw, 1.4rem); color: var(--blush);
+}
+@media (min-width: 1200px) {
+  .hero__edge { transform: translateY(40%) rotate(-1.6deg); }   /* כמעט חצי הכרטיס יושב בחלק הבא: "שבירת הקצה" ברורה */
+  .occasions__list { max-width: 62%; padding-block: 34px; }
+}
+@media (min-width: 761px) and (max-width: 1199px) {
+  /* טאבלט: הכרטיס יורד מתחת לטקסט ולא מכסה אותו */
+  .hero { flex-direction: column; align-items: stretch; padding-bottom: 0; }
+  .hero__edge { position: relative; left: auto; bottom: auto; align-self: flex-end; margin: 28px 0 -110px var(--gutter);
+    width: min(36%, 280px); transform: rotate(-1.4deg); }
+  .occasions__list { max-width: 56%; }
+}
+@media (max-width: 760px) {
+  .occasions__list { padding-block: 112px 26px; gap: 6px 20px; }
+}
+
+/* עוגות: הכותרת לא נחתכת בטלפון, ובמחשב היא מיושרת לשאר העמוד */
+.cakes__track {
+  padding-inline: max(var(--gutter), calc((100vw - 1240px) / 2 + var(--gutter)));
+  scroll-padding-inline: max(var(--gutter), calc((100vw - 1240px) / 2 + var(--gutter)));
+}
+
+/* גלריה: רשת אחידה, בלי חורים בסוף */
+.gallery { columns: auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.g-item { margin: 0; aspect-ratio: 4 / 5; }
+.g-item img { width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 760px) {
+  .gallery { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .g-item { margin: 0; }
+  .g-item:first-child { grid-column: span 2; aspect-ratio: 4 / 3; }
+}
+
+/* עמודים פנימיים: הטקסט מיושר לאותו קו כמו הכותרת */
+.container.prose { max-width: 1240px; }
+.prose > * { max-width: 820px; }
+.prose > .contact-cards { max-width: 1000px; }
+
+/* אודות: הערכים כרשימה נקייה, לא מסגרות שנראות כמו שדות טופס */
+.custom-list--wide { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 32px; }
+.custom-list--wide li { border: 0; border-radius: 0; padding: 0 26px 0 0; position: relative; color: var(--ink-2); }
+.custom-list--wide li::before { content: ""; position: absolute; inset-inline-start: 0; top: 0.55em; width: 13px; height: 7px;
+  border-left: 1.7px solid var(--ink-3); border-bottom: 1.7px solid var(--ink-3); transform: rotate(-45deg); }
+@media (max-width: 760px) { .custom-list--wide { grid-template-columns: 1fr; } }
+
+/* עמוד מוצר: ריווח בין הכפתור לתיאור */
+.product__cta { margin-bottom: 28px; }
+
+/* עמוד הבר: צילום ברקע הראש, הבר האמיתי בחזית, והוא "שובר את הקצה" לתוך החלק הבא */
+.page-head--bar { align-items: center; }
+.page-head--bar .page-head__media { position: relative; z-index: 3; justify-self: start; width: min(100%, 380px);
+  margin-bottom: calc(-1 * clamp(80px, 9vw, 130px)); transform: rotate(-1.4deg); }
+.page-head--bar .page-head__media img { aspect-ratio: 4 / 5; }
+.page-head--bar .page-head__media figcaption { font-size: 0.85rem; color: var(--ink-3); padding: 10px 6px 2px; }
+.bar-includes { padding-top: clamp(40px, 5vw, 64px); }
+@media (max-width: 900px) {
+  .page-head--bar .page-head__media { justify-self: center; width: min(80%, 340px); margin-bottom: 0; }
+}
+
+/* תחתית העמוד בטלפון: קישורי הקטלוג בעמודה אחת */
+@media (max-width: 560px) { .footer__grid { grid-template-columns: 1fr; } }
+
+/* ריווח: פחות חור בין רצועת האירועים לחלק הבא */
+.stations { padding-top: clamp(100px, 11vw, 150px); }
+
+/* פס תוצאה במתכנן בטלפון: רואים את המספר משתנה בזמן שעונים, וקפיצה לשליחה */
+.plan-bar { display: none; }
+@media (max-width: 900px) {
+  .plan-bar {
+    position: fixed; z-index: 41; inset-inline: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 8px 8px 8px 8px;
+    padding-inline-start: 20px; box-shadow: 0 16px 36px -14px rgba(0, 0, 0, 0.85);
+    visibility: hidden;
+  }
+  .plan-bar.is-visible { visibility: visible; }
+  .plan-bar__sum { color: var(--ink-2); font-size: 0.98rem; }
+  .plan-bar__sum strong { color: var(--ink); font-family: var(--font-display); font-size: 1.35rem; font-weight: 400; font-variant-numeric: lining-nums tabular-nums; }
+  .plan-bar__go { flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 8px 18px; border-radius: 999px;
+    border: 1px solid var(--ink-3); color: var(--ink); text-decoration: none; font-weight: 700; }
+  .plan-bar__go:hover { border-color: var(--accent); color: var(--accent-hover); }
+  .planner { padding-bottom: 96px; }
+}
+@media print { .plan-bar, .mobile-cta { display: none !important; } }
+
+/* תמונת הפתיחה: טארטלטים מצולמים בסטודיו על רקע כהה. פחות האפלה, כדי שיראו קינוח אמיתי כבר במסך הראשון */
+.hero__back img { object-position: 50% 72%; filter: brightness(0.66) saturate(1.05) contrast(1.05); }
+@media (max-width: 760px) { .hero__back img { object-position: 50% 62%; filter: brightness(0.8) saturate(1.05); } }
+
+/* מתכון: הצעה להזמין מיד אחרי אופן ההכנה, ולא רק בסוף העמוד */
+.recipe-order { padding-block: 0 clamp(40px, 6vw, 72px); }
+.recipe-order__inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 40px;
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); padding: clamp(22px, 3.5vw, 36px); }
+.recipe-order h2 { font-size: clamp(1.5rem, 2.6vw, 2.1rem); margin-bottom: 6px; }
+.recipe-order p { color: var(--ink-2); max-width: 40em; }
+@media (max-width: 760px) { .recipe-order .btn { width: 100%; } }
+@media print { .recipe-order { display: none !important; } }
+@media (max-width: 760px) {
+  /* טלפון: התמונה מכסה רק את המסך הראשון, כך שהטארטלט יושב מתחת לכפתור ונראה כבר בפתיחה.
+     למעלה, מאחורי הכותרת, ההאפלה נשארת חזקה */
+  .hero__back { bottom: auto; height: 760px; }
+  .hero__back img { object-position: 38% 70%; filter: brightness(0.9) saturate(1.05); }
+  .hero::before { background: linear-gradient(to bottom, rgba(28, 17, 12, 0.55) 0px, rgba(28, 17, 12, 0.84) 190px, rgba(28, 17, 12, 0.84) 400px, rgba(28, 17, 12, 0.42) 590px, var(--bg) 760px); }
 }

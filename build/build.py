@@ -169,7 +169,8 @@ def csp_hash(script):
 
 # ---------------------------------------------------------------- שלד עמוד
 def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload='',
-           root_override=None, head_override=None, write=True):
+           root_override=None, head_override=None, write=True, cta=None, mobile_cta=True):
+    """cta: הפעולה בפס התחתון בטלפון, (קישור, תווית, וואטסאפ?). ברירת מחדל: מתכנן הבר. mobile_cta=False בעמודים משפטיים."""
     depth = len([p for p in path.split('/') if p])
     root = root_override if root_override is not None else '../' * depth
     canonical = abs_url(path)
@@ -179,6 +180,8 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
     lds = '\n'.join(jsonld(x) for x in extra_ld)
     nav_items = '\n'.join(
         f'        <li><a href="{root}{p}"{" aria-current=\"page\"" if p == path else ""}>{n}</a></li>' for n, p in NAV)
+    nav_items += ('\n        <li class="nav-motion"><button class="motion-toggle motion-toggle--nav" type="button" aria-pressed="false" data-motion-toggle>'
+                  '<span class="motion-toggle__label">תנועה: פועלת</span></button></li>')
     og_abs = SITE['url'] + '/assets/img/' + urllib.parse.quote(og_img)
     plan = f'{root}#plan' if (depth or root_override) else '#plan'
     cat_links = '\n'.join(f'          <li><a href="{root}product-category/{c["slug"]}/">{c["name"]}</a></li>' for c in CATEGORIES)
@@ -195,6 +198,17 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
 <meta name="twitter:card" content="summary_large_image">'''
     if head_override is not None:
         meta_block, lds = head_override, ''
+    if not mobile_cta:
+        mobile_cta_html = ''
+    elif cta:
+        href, label, is_wa = cta
+        attrs = ' target="_blank" rel="noopener" data-wa' if is_wa else ''
+        icon = WA_ICON + ' ' if is_wa else ''
+        mobile_cta_html = (f'<div class="mobile-cta" data-mobile-cta aria-hidden="true">\n'
+                           f'  <a class="btn btn--primary" href="{href}"{attrs} tabindex="-1">{icon}{label}</a>\n</div>')
+    else:
+        mobile_cta_html = (f'<div class="mobile-cta" data-mobile-cta aria-hidden="true">\n'
+                           f'  <a class="btn btn--primary" href="{plan}" data-order="bar" tabindex="-1">קבלו הצעת מחיר <span aria-hidden="true">←</span></a>\n</div>')
     doc = f'''<!doctype html>
 <html lang="he" dir="rtl">
 <head>
@@ -226,10 +240,6 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
       </ul>
     </nav>
     <div class="site-header__tools">
-      <button class="motion-toggle" type="button" aria-pressed="false" data-motion-toggle>
-        <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M4 12c2.5-5 5.5-5 8 0s5.5 5 8 0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-        <span class="motion-toggle__label">תנועה: פועלת</span>
-      </button>
       <a class="icon-link" href="{wa()}" target="_blank" rel="noopener" aria-label="שליחת הודעה בוואטסאפ" data-wa>{WA_ICON}</a>
       <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-list" data-menu-btn>
         <span class="visually-hidden">תפריט</span>
@@ -286,12 +296,7 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
   </div>
 </footer>
 
-<a class="wa-float" href="{wa()}" target="_blank" rel="noopener" aria-label="שליחת הודעה בוואטסאפ" data-wa>{WA_ICON}<span>וואטסאפ</span></a>
-
-<div class="mobile-cta" data-mobile-cta aria-hidden="true">
-  <a class="btn btn--primary" href="{plan}" data-order="bar" tabindex="-1">קבלו הצעת מחיר <span aria-hidden="true">←</span></a>
-  <a class="icon-link icon-link--box" href="{wa()}" target="_blank" rel="noopener" aria-label="וואטסאפ" tabindex="-1" data-wa>{WA_ICON}</a>
-</div>
+{mobile_cta_html}
 
 <script src="{root}assets/js/site.js?v={asset_v('js/site.js')}" defer></script>
 </body>
@@ -328,6 +333,12 @@ def product_card(root, p, heading='h3'):
 
 def product_grid(root, items, heading='h3'):
     return '<div class="p-grid">\n        ' + '\n        '.join(product_card(root, p, heading) for p in items) + '\n      </div>'
+
+
+def nowrap_paren(name):
+    """סוגריים בסוף השם (למשל "(24 יחידות)") לא נשברים באמצע השורה."""
+    m = re.match(r'^(.*?)\s*(\([^()]*\))\s*$', name)
+    return f'{esc(m.group(1))} <span class="nowrap">{esc(m.group(2))}</span>' if m else esc(name)
 
 
 def page_band(root, back, crumbs, head_html):
@@ -378,8 +389,8 @@ def build_home(products):
     body = open(os.path.join(ROOT, 'build', 'pages', 'home.html'), encoding='utf-8').read()
     body = body.replace('{{CATEGORY_CARDS}}', category_cards(''))
     body = body.replace('href="https://wa.me/972509153197"', f'href="{wa()}"')
-    preload = ('<link rel="preload" as="image" href="assets/img/hero-event-tall-800.webp" media="(max-width: 760px)">\n'
-               '<link rel="preload" as="image" imagesrcset="assets/img/hero-event-800.webp 800w, assets/img/hero-event-1200.webp 1200w, assets/img/hero-event-1600.webp 1600w" imagesizes="100vw" media="(min-width: 761px)">\n')
+    preload = ('<link rel="preload" as="image" href="assets/img/hero-tart-tall-800.webp" media="(max-width: 760px)">\n'
+               '<link rel="preload" as="image" imagesrcset="assets/img/hero-tart-800.webp 800w, assets/img/hero-tart-1200.webp 1200w, assets/img/hero-tart-1600.webp 1600w" imagesizes="100vw" media="(min-width: 761px)">\n')
     faq_ld = {'@context': 'https://schema.org', '@type': 'FAQPage',
               'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in FAQ_GENERAL]}
     website = {'@context': 'https://schema.org', '@type': 'WebSite', 'name': SITE['name'], 'url': SITE['url'] + '/', 'inLanguage': 'he-IL',
@@ -428,7 +439,7 @@ def build_category(c, products):
     <p class="eyebrow">{c["name"]} · {SITE["area"]}</p>
     <h1>{c["h1"]}</h1>
     <div class="page-head__intro">{intro}</div>
-    <a class="btn btn--wa" href="{wa("שלום, אשמח לקבל הצעת מחיר על " + c["name"])}" target="_blank" rel="noopener" data-wa>{WA_ICON} לקבלת הצעת מחיר בוואטסאפ</a>
+    <a class="btn btn--primary" href="{wa("שלום, אשמח לקבל הצעת מחיר על " + c["name"])}" target="_blank" rel="noopener" data-wa>{WA_ICON} לקבלת הצעת מחיר בוואטסאפ</a>
   </header>'''
     body = f'''{page_band(root, (c["img"], c["w"], c["h"]), crumbs, head)}
   <section class="container section--tight overlap" aria-label="{c["name"]}">
@@ -439,7 +450,8 @@ def build_category(c, products):
   {cta_band(root, "מתכננים אירוע?", "בנו בר קינוחים שלם במתכנן, וקבלו הצעת מחיר אישית.")}'''
     itemlist = {'@context': 'https://schema.org', '@type': 'ItemList', 'name': c['h1'],
                 'itemListElement': [{'@type': 'ListItem', 'position': i, 'url': abs_url(f'product/{p["slug"]}/'), 'name': p['name']} for i, p in enumerate(items, 1)]}
-    layout(path, c['title'], c['meta'], body, extra_ld=[crumbs_ld, itemlist, faq_ld], og_img=f'{c["img"]}-800.webp')
+    layout(path, c['title'], c['meta'], body, extra_ld=[crumbs_ld, itemlist, faq_ld], og_img=f'{c["img"]}-800.webp',
+           cta=(wa("שלום, אשמח לקבל הצעת מחיר על " + c["name"]), 'הצעת מחיר בוואטסאפ', True))
 
 
 def build_product(p, products):
@@ -459,10 +471,10 @@ def build_product(p, products):
     </figure>
     <div class="product__info">
       <p class="eyebrow">{cat["name"]}</p>
-      <h1>{esc(p["name"])}</h1>
+      <h1>{nowrap_paren(p["name"])}</h1>
       <p class="lead">{esc(p["short"])}</p>
       <div class="product__cta">
-        <a class="btn btn--wa" href="{wa(msg)}" target="_blank" rel="noopener" data-wa>{WA_ICON} לקבלת הצעת מחיר בוואטסאפ</a>
+        <a class="btn btn--primary" href="{wa(msg)}" target="_blank" rel="noopener" data-wa>{WA_ICON} לקבלת הצעת מחיר בוואטסאפ</a>
         <p class="micro">או <a class="text-link" href="{root}#plan">תכננו בר קינוחים שלם במתכנן</a></p>
       </div>
       <div class="product__desc">{desc_html}</div>
@@ -484,7 +496,7 @@ def build_product(p, products):
                               f'{p["name"]} | הכיף שבאפיה', p['name']) if len(t) <= 62)
     layout(path, title,
            f'{p["short"]} בהזמנה אישית, {SITE["area"]}. הצעת מחיר בוואטסאפ.', body,
-           extra_ld=[crumbs_ld], og_img=f'{p["img"]}-800.webp')
+           extra_ld=[crumbs_ld], og_img=f'{p["img"]}-800.webp', cta=(wa(msg), 'הצעת מחיר בוואטסאפ', True))
 
 
 def build_bar_page(products):
@@ -523,17 +535,17 @@ def build_bar_page(products):
         FAQ_GENERAL[4], FAQ_GENERAL[0], FAQ_GENERAL[2], FAQ_GENERAL[6],
     ]
     faq, faq_ld = faq_block(faq_items, 'שאלות על בר קינוחים')
-    body = f'''{crumbs}
-  <header class="page-head page-head--split container">
+    head = f'''  <header class="page-head page-head--split page-head--bar container">
     <div>
       <p class="eyebrow">בר קינוחים · בר מתוקים · שולחן קינוחים</p>
       <h1>בר קינוחים ופטיפורים לאירועים בירושלים</h1>
       <p class="lead">בר הקינוחים הוא מה שהאורחים זוכרים מהאירוע. אנחנו מתכננים, אופים ומקימים בר מעוצב בהתאמה לצבעים, לטעמים ולכמות האורחים, בירושלים והסביבה.</p>
       <a class="btn btn--primary" href="{root}#plan" data-order="bar">תכננו את הבר וקבלו הצעת מחיר <span aria-hidden="true">←</span></a>
     </div>
-    <figure class="page-head__media">{img(root, "ev-bar-full", 1600, 1200, "בר קינוחים מלא באירוע: מעמדים לבנים, פרחים ומגוון פטיפורים", "(max-width: 900px) 92vw, 560px", lazy=False)}</figure>
-  </header>
-  <section class="container section--tight" aria-labelledby="inc-title">
+    <figure class="page-head__media">{img(root, "ev-bar-event", 646, 808, "בר קינוחים מלא באירוע: קשת פרחים, פמוטים ומגוון פטיפורים", "(max-width: 900px) 80vw, 380px", lazy=False)}<figcaption>בר שהקמנו לאחרונה · צילום מהאירוע</figcaption></figure>
+  </header>'''
+    body = f'''{page_band(root, ("band-mac", 1600, 1066), crumbs, head)}
+  <section class="container section--tight bar-includes" aria-labelledby="inc-title">
     <h2 id="inc-title" class="block-title">מה כולל בר קינוחים?</h2>
     <ul class="mini-list">
 {st_html}
@@ -549,10 +561,10 @@ def build_bar_page(products):
                'description': 'תכנון, הכנה והקמה של בר קינוחים ופטיפורים מעוצב לבר מצווה, בת מצווה, ברית, אירוסין, שבע ברכות ואירועי חברה.'}
     layout(path, 'בר קינוחים לאירועים ובר מצווה בירושלים | הכיף שבאפיה',
            'בר קינוחים ופטיפורים מעוצב לבר מצווה, בת מצווה, ברית, אירוסין ושבע ברכות בירושלים והסביבה. מה כולל הבר, כמה פטיפורים צריך, ואיך מזמינים.',
-           body, extra_ld=[crumbs_ld, service, faq_ld], og_img='ev-bar-full-1200.webp')
+           body, extra_ld=[crumbs_ld, service, faq_ld], og_img='ev-bar-event-646.webp')
 
 
-def simple_page(path, title, desc, h1, eyebrow, inner, crumbs_name, back=None, intro='', overlap=False):
+def simple_page(path, title, desc, h1, eyebrow, inner, crumbs_name, back=None, intro='', overlap=False, mobile_cta=True):
     """intro: משפט פתיחה בתוך הרצועה העליונה. overlap: התוכן עולה לתוך שולי התמונה (שבירת הקצה)."""
     root = '../' * len([x for x in path.split('/') if x])
     crumbs, crumbs_ld = breadcrumbs(root, [(crumbs_name, None)])
@@ -566,7 +578,7 @@ def simple_page(path, title, desc, h1, eyebrow, inner, crumbs_name, back=None, i
   <div class="container prose{' overlap' if overlap else ''}">
 {inner.replace("{root}", root)}
   </div>'''
-    layout(path, title, desc, body, extra_ld=[crumbs_ld])
+    layout(path, title, desc, body, extra_ld=[crumbs_ld], mobile_cta=mobile_cta)
 
 
 def build_static_pages():
@@ -583,19 +595,19 @@ def build_static_pages():
       <li>כשרות מהודרת.</li>
     </ul>
     <p><a class="btn btn--primary" href="{root}#plan" data-order="bar">לתכנון הבר והצעת מחיר <span aria-hidden="true">←</span></a></p>''', 'אודות',
-                back=('ev-platter-wide', 1600, 1200))
+                back=('band-ver', 1500, 1000))
 
     simple_page('contact/', 'צור קשר | הזמנות והצעות מחיר בוואטסאפ | הכיף שבאפיה',
                 'להזמנת בר קינוחים, מגשי פטיפורים ועוגות מעוצבות: וואטסאפ 050-915-3197. ירושלים והסביבה.',
                 'צרו קשר: הזמנות והצעות מחיר', 'צור קשר', f'''
     <div class="contact-cards">
       <div class="contact-card"><h2>וואטסאפ</h2><p dir="ltr" class="contact-card__num">{SITE["phone"]}</p>
-        <a class="btn btn--wa" href="{wa()}" target="_blank" rel="noopener" data-wa>{WA_ICON} שליחת הודעה בוואטסאפ</a></div>
+        <a class="btn btn--primary" href="{wa()}" target="_blank" rel="noopener" data-wa>{WA_ICON} שליחת הודעה בוואטסאפ</a></div>
       <div class="contact-card"><h2>טלפון</h2><p><a class="text-link" href="tel:{SITE["tel"]}" dir="ltr">{SITE["phone"]}</a></p>
         <h2>מייל</h2><p><a class="text-link" href="mailto:{SITE["email"]}">{SITE["email"]}</a></p></div>
       <div class="contact-card"><h2>אזור שירות</h2><p>{SITE["area"]}. משלוח מגשים או הקמת בר קינוחים במקום האירוע.</p>
         <p><a class="text-link" href="{{root}}#plan">רוצים הערכה מהירה? מתכנן הבר ←</a></p></div>
-    </div>''', 'צור קשר', back=('ev-bar-full', 1600, 1200),
+    </div>''', 'צור קשר', back=('band-mac', 1600, 1066),
                 intro='הדרך הכי מהירה להזמין היא וואטסאפ. שלחו לנו מה אתם מתכננים, ונחזור אליכם עם הצעה אישית.', overlap=True)
 
     simple_page('הצהרת-נגישות/', 'הצהרת נגישות | הכיף שבאפיה',
@@ -613,7 +625,7 @@ def build_static_pages():
     </ul>
     <h2>נתקלתם בבעיה?</h2>
     <p>אם משהו באתר לא נגיש לכם, נשמח לשמוע ולתקן: וואטסאפ או טלפון <a class="text-link" href="tel:{SITE["tel"]}" dir="ltr">{SITE["phone"]}</a>, או מייל <a class="text-link" href="mailto:{SITE["email"]}">{SITE["email"]}</a>.</p>
-    <p class="micro">עדכון אחרון: {TODAY}</p>''', 'הצהרת נגישות')
+    <p class="micro">עדכון אחרון: {TODAY}</p>''', 'הצהרת נגישות', mobile_cta=False)
 
     simple_page('privacy-policy-1/', 'מדיניות פרטיות | הכיף שבאפיה',
                 'מדיניות הפרטיות של אתר הכיף שבאפיה: אילו פרטים נאספים, למה, איפה הם נשמרים ואיך פונים אלינו בכל שאלה.',
@@ -630,7 +642,7 @@ def build_static_pages():
     <p>האתר שומר בדפדפן שלכם העדפה אחת בלבד: האם להפעיל אנימציות. היא נשארת במכשיר שלכם ואינה נשלחת אלינו.</p>
     <h2>עיון, תיקון ומחיקה</h2>
     <p>אפשר לבקש לעיין בפרטים שלכם, לתקן אותם או למחוק אותם, במייל: <a class="text-link" href="mailto:{SITE["email"]}">{SITE["email"]}</a>.</p>
-    <p class="micro">עדכון אחרון: {TODAY}</p>''', 'מדיניות פרטיות')
+    <p class="micro">עדכון אחרון: {TODAY}</p>''', 'מדיניות פרטיות', mobile_cta=False)
 
 
 def build_404():

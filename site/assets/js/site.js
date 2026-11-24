@@ -52,16 +52,31 @@
   /* ---------- כותרת עליונה + תפריט בטלפון ---------- */
   var header = $('.site-header');
   var menuBtn = $('[data-menu-btn]');
+  function closeMenu(focusBtn) {
+    document.body.classList.remove('nav-open');
+    menuBtn.setAttribute('aria-expanded', 'false');
+    if (focusBtn) menuBtn.focus();
+  }
+  function menuItems() { return $$('#nav-list a, #nav-list button'); }
   if (menuBtn) {
     menuBtn.addEventListener('click', function () {
       var open = document.body.classList.toggle('nav-open');
       menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) { var first = menuItems()[0]; if (first) first.focus(); }
     });
     $$('.main-nav a').forEach(function (a) {
-      a.addEventListener('click', function () {
-        document.body.classList.remove('nav-open');
-        menuBtn.setAttribute('aria-expanded', 'false');
-      });
+      a.addEventListener('click', function () { closeMenu(false); });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (!document.body.classList.contains('nav-open')) return;
+      if (e.key === 'Escape') { closeMenu(true); return; }
+      if (e.key !== 'Tab') return;
+      // הפוקוס מסתובב בין כפתור התפריט לקישורים שבו, ולא יוצא לעמוד שמתחת
+      var items = [menuBtn].concat(menuItems());
+      var i = items.indexOf(document.activeElement);
+      var next = e.shiftKey ? (i <= 0 ? items.length - 1 : i - 1) : (i === -1 || i === items.length - 1 ? 0 : i + 1);
+      e.preventDefault();
+      items[next].focus();
     });
   }
 
@@ -91,10 +106,16 @@
     new IntersectionObserver(function (e) { header.classList.toggle('show-logo', !e[0].isIntersecting); },
       { rootMargin: '-' + (header.offsetHeight || 80) + 'px 0px 0px 0px' }).observe(heroLogo);
   }
+  if (!mainAction) {
+    var checkScrolled = function () { mainGone = window.scrollY > window.innerHeight * 0.8; updateFloating(); };
+    window.addEventListener('scroll', checkScrolled, { passive: true });
+    mainGone = false;
+    checkScrolled();
+  }
   if ('IntersectionObserver' in window) {
     if (mainAction) new IntersectionObserver(function (e) { mainGone = !e[0].isIntersecting && e[0].boundingClientRect.top < 0; updateFloating(); }).observe(mainAction);
     if (planSection) new IntersectionObserver(function (e) { planVisible = e[0].isIntersecting; updateFloating(); }, { rootMargin: '0px 0px -30% 0px' }).observe(planSection);
-  } else {
+  } else if (mainAction) {
     mainGone = true;
   }
   updateFloating();
@@ -188,6 +209,10 @@
   var cakeEl = $('[data-cake]');
   var shownTotal = 0, countRaf = null;
   var lastPlan = null;
+  var planTouched = false;
+  var planStatus = $('[data-plan-status]');
+  var statusTimer = null;
+  var planBar = $('[data-plan-bar]');
 
   function val(name) { var el = planForm && planForm.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ''; }
   function round10(n) { return Math.max(10, Math.round(n / 10) * 10); }
@@ -239,12 +264,35 @@
       event: val('event'), guests: g, role: role === 'main' ? 'הכיבוד המרכזי' : 'קינוח אחרי ארוחה',
       kosher: val('kosher'), delivery: val('delivery'), total: total, parts: parts, cake: withCake
     };
+    if (planBar) {
+      $('[data-bar-total]', planBar).textContent = total;
+      $('[data-bar-guests]', planBar).textContent = g >= 400 ? '400+' : g;
+      $('[data-bar-cake]', planBar).hidden = !withCake;
+    }
+    if (planStatus) {
+      clearTimeout(statusTimer);
+      statusTimer = setTimeout(function () {
+        planStatus.textContent = 'ההמלצה: כ־' + total + ' יחידות לכ־' + g + ' אורחים' + (withCake ? ', ועוגה מרכזית' : '') + '.';
+      }, 700);
+    }
   }
   if (planForm) {
+    var touch = function () { planTouched = true; };
+    planForm.addEventListener('input', touch);
+    planForm.addEventListener('change', touch);
     planForm.addEventListener('input', updatePlan);
     planForm.addEventListener('change', updatePlan);
     planForm.addEventListener('submit', function (e) { e.preventDefault(); });
     updatePlan();
+  }
+
+  if (planBar && planForm && 'IntersectionObserver' in window) {
+    new IntersectionObserver(function (e) {
+      var show = e[0].isIntersecting && window.matchMedia('(max-width: 900px)').matches;
+      planBar.classList.toggle('is-visible', show);
+      planBar.setAttribute('aria-hidden', show ? 'false' : 'true');
+      $('a', planBar).tabIndex = show ? 0 : -1;
+    }, { rootMargin: '-35% 0px -20% 0px' }).observe(planForm);
   }
 
   /* ---------- קישורי "הזמנה": מסמנים מראש מה מזמינים ---------- */
@@ -252,6 +300,10 @@
   function applyOrder(kind) {
     var box = document.querySelector('#request-form input[name="what"][value="' + ORDER_MAP[kind] + '"]');
     if (box) box.checked = true;
+    if (kind === 'cake') {
+      var bar = document.querySelector('#request-form input[name="what"][value="' + ORDER_MAP.bar + '"]');
+      if (bar) bar.checked = false;
+    }
   }
   $$('[data-order]').forEach(function (a) {
     a.addEventListener('click', function () {
@@ -275,20 +327,29 @@
       'שלום, אשמח לקבל הצעת מחיר.',
       '',
       'שם: ' + f.name.value.trim(),
-      'טלפון: ' + f.phone.value.trim(),
-      'סוג האירוע: ' + (p.event || ''),
+      f.phone.value.trim() ? 'טלפון: ' + f.phone.value.trim() : '',
+      p.event ? 'סוג האירוע: ' + p.event : '',
       f.date.value ? 'תאריך: ' + f.date.value.split('-').reverse().join('.') : '',
       f.place.value.trim() ? 'מקום: ' + f.place.value.trim() : '',
-      'מספר אורחים: כ־' + (p.guests || ''),
       what ? 'מה מזמינים: ' + what : '',
-      'תפקיד הבר: ' + (p.role || '') + ' | ' + (p.kosher || '') + ' | ' + (p.delivery || ''),
-      'הערכה מהמתכנן: כ־' + (p.total || '') + ' יחידות (' + (p.parts || []).join('; ') + ')' + (p.cake ? ' + עוגה מרכזית' : ''),
+      planTouched ? 'מספר אורחים: כ־' + (p.guests || '') : '',
+      planTouched ? 'תפקיד הבר: ' + (p.role || '') + ' | ' + (p.kosher || '') + ' | ' + (p.delivery || '') : '',
+      planTouched ? 'הערכה מהמתכנן: כ־' + (p.total || '') + ' יחידות (' + (p.parts || []).join('; ') + ')' + (p.cake ? ' + עוגה מרכזית' : '') : '',
       f.notes.value.trim() ? 'הערות: ' + f.notes.value.trim() : ''
     ];
     return lines.filter(function (l, i) { return l !== '' || i === 1; }).join('\n');
   }
-  function validPhone(v) { var d = v.replace(/[^\d+]/g, '').replace(/^\+972/, '0'); return /^0\d{8,9}$/.test(d); }
-  function check(field, ok) { var w = field.closest('.field'); if (w) w.classList.toggle('is-invalid', !ok); return ok; }
+  function validPhone(v) {
+    var d = v.replace(/[^\d+]/g, '');
+    if (/^\+972/.test(d)) d = '0' + d.slice(4);
+    return /^0\d{8,9}$/.test(d) || /^(\+|00)\d{8,15}$/.test(d);   // ישראלי, או מספר מחו"ל עם קידומת מדינה
+  }
+  function check(field, ok) {
+    var w = field.closest('.field');
+    if (w) w.classList.toggle('is-invalid', !ok);
+    if (ok) field.removeAttribute('aria-invalid'); else field.setAttribute('aria-invalid', 'true');
+    return ok;
+  }
   if (req) {
     var mailLink = $('[data-mail]', req);
     if (mailLink) {
@@ -299,7 +360,8 @@
     req.addEventListener('submit', function (e) {
       e.preventDefault();
       var okName = check(req.elements.name, req.elements.name.value.trim().length > 1);
-      var okPhone = check(req.elements.phone, validPhone(req.elements.phone.value));
+      var phoneVal = req.elements.phone.value.trim();
+      var okPhone = check(req.elements.phone, !phoneVal || validPhone(phoneVal));
       if (!okName || !okPhone) { (okName ? req.elements.phone : req.elements.name).focus(); return; }
       var url = 'https://wa.me/' + BUSINESS_WA + '?text=' + encodeURIComponent(buildMessage());
       var done = $('[data-done]', req);
@@ -309,7 +371,7 @@
       if (done) { done.hidden = false; done.focus({ preventScroll: false }); }
     });
     $$('#r-name, #r-phone').forEach(function (inp) {
-      inp.addEventListener('input', function () { var w = inp.closest('.field'); if (w) w.classList.remove('is-invalid'); });
+      inp.addEventListener('input', function () { var w = inp.closest('.field'); if (w) w.classList.remove('is-invalid'); inp.removeAttribute('aria-invalid'); });
     });
   }
 
@@ -356,7 +418,7 @@
       if (!check(t, ok)) { e.preventDefault(); t.focus(); }
     });
     if (f.elements.comment) {
-      f.elements.comment.addEventListener('input', function () { var w = f.elements.comment.closest('.field'); if (w) w.classList.remove('is-invalid'); });
+      f.elements.comment.addEventListener('input', function () { var w = f.elements.comment.closest('.field'); if (w) w.classList.remove('is-invalid'); f.elements.comment.removeAttribute('aria-invalid'); });
     }
   });
 

@@ -122,11 +122,19 @@ echo $crumbs; // phpcs:ignore WordPress.Security.EscapeOutput -- נבנה עם e
     <aside class="recipe__tip"><strong>טיפ מהמטבח</strong><p><?php echo esc_html( $m['tip'] ); ?></p></aside>
     <?php endif; ?>
   </article>
+  <section class="container recipe-order" aria-labelledby="order-t">
+    <div class="recipe-order__inner">
+      <div>
+        <h2 id="order-t">רוצים את זה מוכן לאירוע?</h2>
+        <p>את <?php echo esc_html( $title ); ?> ועוד עשרות קינוחים אנחנו מכינים טריים לאירועים, בבר קינוחים או במגשים מוכנים. ירושלים והסביבה.</p>
+      </div>
+      <a class="btn btn--primary" href="<?php echo esc_url( hakef_wa( 'שלום, ראיתי באתר את המתכון "' . $title . '" ואשמח להצעת מחיר לאירוע' ) ); ?>" target="_blank" rel="noopener" data-wa><?php echo hakef_wa_icon(); // phpcs:ignore ?> הצעת מחיר בוואטסאפ</a>
+    </div>
+  </section>
 <?php
 if ( function_exists( 'hakef_talk_section' ) ) {
 	echo hakef_talk_section( $pid ); // phpcs:ignore WordPress.Security.EscapeOutput -- נבנה עם esc_*
 }
-echo hakef_cta_band(); // phpcs:ignore
 $more = get_posts( array( 'post_type' => 'recipe', 'posts_per_page' => 3, 'post__not_in' => array( $pid ), 'orderby' => 'rand' ) );
 if ( $more ) {
 	echo '<section class="container section--tight" aria-labelledby="more-t"><h2 id="more-t" class="related__title">עוד מתכונים</h2><div class="r-grid">';
