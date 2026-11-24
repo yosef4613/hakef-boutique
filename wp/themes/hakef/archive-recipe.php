@@ -18,15 +18,15 @@ hakef_set_head( array(
 ) );
 get_header();
 ?>
-  <section class="page-band">
+  <div class="page-band">
     <figure class="page-band__back" aria-hidden="true"><img src="<?php echo esc_url( home_url( '/assets/img/rec-coffee-nougat-1200.webp' ) ); ?>" width="1600" height="1196" alt="" fetchpriority="high" decoding="async"></figure>
     <?php echo $crumbs; // phpcs:ignore ?>
-    <section class="page-head container">
+    <header class="page-head container">
       <p class="eyebrow">מתכונים</p>
       <h1>מתכונים מהמטבח של <?php echo esc_html( HAKEF_SITE['name'] ); ?></h1>
       <p class="lead">מתכונים ביתיים לעוגות, עוגיות וקינוחים, צעד אחר צעד. ואם אין זמן לאפות, אנחנו כאן.</p>
-    </section>
-  </section>
+    </header>
+  </div>
   <section class="container section--tight overlap" aria-label="רשימת המתכונים">
     <?php if ( have_posts() ) : ?>
     <div class="r-grid">

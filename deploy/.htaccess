@@ -62,4 +62,13 @@ RewriteRule . /index.php [L]
 <IfModule mod_headers.c>
   Header always set X-Content-Type-Options "nosniff"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  # הדפדפן מתחבר תמיד בצורה מוצפנת (שנה). בלי תתי־דומיינים, כי שרתי המייל לא בהכרח מוצפנים
+  Header always set Strict-Transport-Security "max-age=31536000"
+  # אתרים זרים לא יכולים להציג את האתר בתוך מסגרת
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+  # מדיניות תוכן לעמודים הסטטיים: רק קבצים מהאתר עצמו, והסקריפט המוטמע מאושר לפי טביעת אצבע
+  <FilesMatch "\.html$">
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-ekDQG8lLiVtMSjGDMRbTKAsnE3Z794cca/qeYOeoT44='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+  </FilesMatch>
 </IfModule>

@@ -148,6 +148,25 @@ def breadcrumbs(root, items):
 WA_ICON = '<svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.1.7a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3Z"/></svg>'
 
 
+# הסקריפט היחיד שמוטמע בעמודים: העדפת תנועה, לפני הציור הראשון כדי שלא יהיה הבהוב.
+# מדיניות התוכן (CSP) מאשרת אותו לפי טביעת אצבע שמחושבת ממנו, כך ששינוי בו מעדכן גם את המדיניות.
+MOTION_SCRIPT = """
+  /* העדפת תנועה: לפני הציור הראשון, כדי שלא יהיה הבהוב */
+  (function () {
+    var pref = null;
+    try { pref = localStorage.getItem('hakef-motion'); } catch (e) {}
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.documentElement.dataset.motion = pref ? pref : (reduce ? 'off' : 'on');
+    document.documentElement.classList.add('js');
+  })();
+"""
+
+
+def csp_hash(script):
+    import hashlib, base64
+    return "'sha256-" + base64.b64encode(hashlib.sha256(script.encode('utf-8')).digest()).decode() + "'"
+
+
 # ---------------------------------------------------------------- שלד עמוד
 def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload='',
            root_override=None, head_override=None, write=True):
@@ -189,16 +208,7 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
 <link rel="preload" href="{root}assets/fonts/Fredoka-hebrew.woff2" as="font" type="font/woff2" crossorigin>
 {preload}<link rel="stylesheet" href="{root}assets/css/fonts.css?v={asset_v('css/fonts.css')}">
 <link rel="stylesheet" href="{root}assets/css/site.css?v={asset_v('css/site.css')}">
-<script>
-  /* העדפת תנועה: לפני הציור הראשון, כדי שלא יהיה הבהוב */
-  (function () {{
-    var pref = null;
-    try {{ pref = localStorage.getItem('hakef-motion'); }} catch (e) {{}}
-    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    document.documentElement.dataset.motion = pref ? pref : (reduce ? 'off' : 'on');
-    document.documentElement.classList.add('js');
-  }})();
-</script>
+<script>{MOTION_SCRIPT}</script>
 {lds}
 </head>
 <body>
@@ -323,8 +333,8 @@ def product_grid(root, items, heading='h3'):
 def page_band(root, back, crumbs, head_html):
     """ראש עמוד בשלוש שכבות: צילום אמיתי ברקע, הטקסט באמצע, הכפתור בחזית."""
     key, w, h = back
-    return (f'<section class="page-band">\n  <figure class="page-band__back" aria-hidden="true">'
-            f'{img(root, key, w, h, "", "100vw", lazy=False)}</figure>\n  {crumbs}\n{head_html}\n  </section>')
+    return (f'<div class="page-band">\n  <figure class="page-band__back" aria-hidden="true">'
+            f'{img(root, key, w, h, "", "100vw", lazy=False)}</figure>\n  {crumbs}\n{head_html}\n  </div>')
 
 
 def cta_band(root, title, text, label='לתכנון הבר והצעת מחיר', href=None):
@@ -389,11 +399,11 @@ def build_shop(products):
       <div class="shop-cat__head"><h2 id="s-{esc(c["slug"])}">{c["name"]}</h2><a class="text-link" href="{root}product-category/{c["slug"]}/">לעמוד {c["name"]} ←</a></div>
       {product_grid(root, items)}
     </section>''')
-    head = '''  <section class="page-head container">
+    head = '''  <header class="page-head container">
     <p class="eyebrow">הקטלוג</p>
     <h1>כל המוצרים: בר קינוחים, פטיפורים, עוגות מעוצבות ומארזים</h1>
     <p class="lead">כל מה שאפשר להזמין לאירוע, בהזמנה אישית ובטריות מלאה. בוחרים מה מתאים, שולחים הודעה, ומקבלים הצעת מחיר.</p>
-  </section>'''
+  </header>'''
     body = f'''{page_band(root, ("hero-petitfours", 1600, 1066), crumbs, head)}
   <div class="container shop overlap">
     {"".join(sections)}
@@ -414,12 +424,12 @@ def build_category(c, products):
     others = ' '.join(f'<a class="chip-link" href="{root}product-category/{o["slug"]}/">{o["name"]}</a>' for o in CATEGORIES if o is not c)
     intro = ''.join(f'<p>{esc(t)}</p>' for t in c['intro'])
     faq, faq_ld = faq_block([FAQ_GENERAL[0], FAQ_GENERAL[3], FAQ_GENERAL[2], FAQ_GENERAL[6]], 'מה חשוב לדעת לפני שמזמינים')
-    head = f'''  <section class="page-head container">
+    head = f'''  <header class="page-head container">
     <p class="eyebrow">{c["name"]} · {SITE["area"]}</p>
     <h1>{c["h1"]}</h1>
     <div class="page-head__intro">{intro}</div>
     <a class="btn btn--wa" href="{wa("שלום, אשמח לקבל הצעת מחיר על " + c["name"])}" target="_blank" rel="noopener" data-wa>{WA_ICON} לקבלת הצעת מחיר בוואטסאפ</a>
-  </section>'''
+  </header>'''
     body = f'''{page_band(root, (c["img"], c["w"], c["h"]), crumbs, head)}
   <section class="container section--tight overlap" aria-label="{c["name"]}">
     {product_grid(root, items, 'h2')}
@@ -514,7 +524,7 @@ def build_bar_page(products):
     ]
     faq, faq_ld = faq_block(faq_items, 'שאלות על בר קינוחים')
     body = f'''{crumbs}
-  <section class="page-head page-head--split container">
+  <header class="page-head page-head--split container">
     <div>
       <p class="eyebrow">בר קינוחים · בר מתוקים · שולחן קינוחים</p>
       <h1>בר קינוחים ופטיפורים לאירועים בירושלים</h1>
@@ -522,7 +532,7 @@ def build_bar_page(products):
       <a class="btn btn--primary" href="{root}#plan" data-order="bar">תכננו את הבר וקבלו הצעת מחיר <span aria-hidden="true">←</span></a>
     </div>
     <figure class="page-head__media">{img(root, "ev-bar-full", 1600, 1200, "בר קינוחים מלא באירוע: מעמדים לבנים, פרחים ומגוון פטיפורים", "(max-width: 900px) 92vw, 560px", lazy=False)}</figure>
-  </section>
+  </header>
   <section class="container section--tight" aria-labelledby="inc-title">
     <h2 id="inc-title" class="block-title">מה כולל בר קינוחים?</h2>
     <ul class="mini-list">
@@ -547,10 +557,10 @@ def simple_page(path, title, desc, h1, eyebrow, inner, crumbs_name, back=None, i
     root = '../' * len([x for x in path.split('/') if x])
     crumbs, crumbs_ld = breadcrumbs(root, [(crumbs_name, None)])
     intro_html = f'\n    <p class="lead">{intro}</p>' if intro else ''
-    head = f'''  <section class="page-head container">
+    head = f'''  <header class="page-head container">
     <p class="eyebrow">{eyebrow}</p>
     <h1>{h1}</h1>{intro_html}
-  </section>'''
+  </header>'''
     top = page_band(root, back, crumbs, head) if back else crumbs + '\n' + head
     body = f'''{top}
   <div class="container prose{' overlap' if overlap else ''}">
@@ -672,7 +682,17 @@ def build_htaccess():
               '  ExpiresByType text/html "access plus 0 seconds"', '</IfModule>',
               '<IfModule mod_deflate.c>', '  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/xml', '</IfModule>',
               '<IfModule mod_headers.c>', '  Header always set X-Content-Type-Options "nosniff"',
-              '  Header always set Referrer-Policy "strict-origin-when-cross-origin"', '</IfModule>', '']
+              '  Header always set Referrer-Policy "strict-origin-when-cross-origin"',
+              '  # הדפדפן מתחבר תמיד בצורה מוצפנת (שנה). בלי תתי־דומיינים, כי שרתי המייל לא בהכרח מוצפנים',
+              '  Header always set Strict-Transport-Security "max-age=31536000"',
+              '  # אתרים זרים לא יכולים להציג את האתר בתוך מסגרת',
+              '  Header always set X-Frame-Options "SAMEORIGIN"',
+              '  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"',
+              '  # מדיניות תוכן לעמודים הסטטיים: רק קבצים מהאתר עצמו, והסקריפט המוטמע מאושר לפי טביעת אצבע',
+              '  <FilesMatch "\\.html$">',
+              f'    Header set Content-Security-Policy "default-src \'self\'; script-src \'self\' {csp_hash(MOTION_SCRIPT)}; style-src \'self\' \'unsafe-inline\'; img-src \'self\' data:; font-src \'self\'; connect-src \'self\'; object-src \'none\'; base-uri \'self\'; form-action \'self\'; frame-ancestors \'self\'; upgrade-insecure-requests"',
+              '  </FilesMatch>',
+              '</IfModule>', '']
     os.makedirs(os.path.join(ROOT, 'deploy'), exist_ok=True)
     open(os.path.join(ROOT, 'deploy', '.htaccess'), 'w', encoding='utf-8').write('\n'.join(lines))
 
@@ -739,11 +759,11 @@ def build_recipes_preview():
     root = '../'
     crumbs, crumbs_ld = breadcrumbs(root, [('מתכונים', None)])
     cards = '\n      '.join(recipe_card(root, r) for r in recipes)
-    head = f'''  <section class="page-head container">
+    head = f'''  <header class="page-head container">
     <p class="eyebrow">מתכונים</p>
     <h1>מתכונים מהמטבח של {SITE["name"]}</h1>
     <p class="lead">מתכונים ביתיים לעוגות, עוגיות וקינוחים, צעד אחר צעד. ואם אין זמן לאפות, אנחנו כאן.</p>
-  </section>'''
+  </header>'''
     body = f"""{page_band(root, ("rec-coffee-nougat", 1600, 1196), crumbs, head)}
   <section class="container section--tight overlap" aria-label="רשימת המתכונים">
     <div class="r-grid">
