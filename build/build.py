@@ -638,7 +638,12 @@ def build_404():
 
 
 def build_sitemap_robots():
-    urls = '\n'.join(f'  <url><loc>{u}</loc><lastmod>{TODAY}</lastmod></url>' for u in PAGES_FOR_SITEMAP)
+    # המתכונים חיים בוורדפרס ומופיעים ב־wp-sitemap.xml. גם כאן, כדי שגוגל יקבל אותם מהמפה המהירה.
+    # מתכונים חדשים שנוספים בלוח הבקרה נכנסים אוטומטית רק ל־wp-sitemap.xml.
+    recipes = json.load(open(os.path.join(ROOT, 'build', 'data', 'recipes.json'), encoding='utf-8'))
+    recipe_urls = [abs_url('מתכונים/')] + [abs_url(f'מתכונים/{r["slug"]}/') for r in recipes]
+    all_urls = PAGES_FOR_SITEMAP + [u for u in recipe_urls if u not in PAGES_FOR_SITEMAP]
+    urls = '\n'.join(f'  <url><loc>{u}</loc><lastmod>{TODAY}</lastmod></url>' for u in all_urls)
     open(os.path.join(OUT, 'sitemap.xml'), 'w', encoding='utf-8').write(
         f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}\n</urlset>\n')
     open(os.path.join(OUT, 'robots.txt'), 'w', encoding='utf-8').write(
