@@ -3,16 +3,17 @@
 
 שימוש:
   python3 build/build.py                 # תצוגה מקדימה ל-site/ (noindex)
-  python3 build/build.py --production    # לאתר האמיתי: site/ ניתן לאינדוקס + deploy/.htaccess
+  python3 build/build.py --production --out dist   # לאתר האמיתי: dist/ ניתן לאינדוקס, כולל .htaccess
 
 מוצרים: build/data/products.json. דף הבית: build/pages/home.html.
 """
 import html, json, os, re, sys, urllib.parse, datetime
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT = os.path.join(ROOT, 'site')
-IMG_DIR = os.path.join(OUT, 'assets', 'img')
+SRC_SITE = os.path.join(ROOT, 'site')            # התמונות, העיצוב והסקריפט נמצאים כאן
+IMG_DIR = os.path.join(SRC_SITE, 'assets', 'img')
 PRODUCTION = '--production' in sys.argv
+OUT = os.path.abspath(sys.argv[sys.argv.index('--out') + 1]) if '--out' in sys.argv else SRC_SITE
 TODAY = datetime.date.today().isoformat()
 
 SITE = {
@@ -649,6 +650,10 @@ def main():
     build_404()
     build_sitemap_robots()
     build_htaccess()
+    if OUT != SRC_SITE:
+        import shutil
+        shutil.copytree(os.path.join(SRC_SITE, 'assets'), os.path.join(OUT, 'assets'), dirs_exist_ok=True)
+        shutil.copy(os.path.join(ROOT, 'deploy', '.htaccess'), os.path.join(OUT, '.htaccess'))
     print(f'נבנו {len(PAGES_FOR_SITEMAP)} עמודים ל-{OUT}', '(production)' if PRODUCTION else '(תצוגה מקדימה, noindex)')
 
 

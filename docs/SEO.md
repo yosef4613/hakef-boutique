@@ -32,8 +32,8 @@
 ## 2. ביום העלייה לאוויר
 
 1. גיבוי מלא של וורדפרס (קבצים ומסד נתונים) ב־Hostinger.
-2. בנייה לאתר האמיתי: `python3 build/build.py --production`. זה מוריד את ה־noindex.
-3. להעלות את `site/` לשורש של hakef.com, ולהעתיק את `deploy/.htaccess` לשורש.
+2. בנייה לאתר האמיתי: `python3 build/build.py --production --out dist`. זה בונה בלי noindex, כולל `.htaccess`.
+3. להעלות את `dist/` לשורש של hakef.com, ליד וורדפרס ובלי למחוק אותו. רק קובץ `.htaccess` מתחלף, והישן נשמר בצד כגיבוי. החזרת הקובץ הישן מחזירה את וורדפרס מיד.
 4. לבדוק כמה כתובות ישנות (למשל `/product/קרם-נוגט/` או `/מתכונים/`) ולוודא שהן מפנות.
 5. **Google Search Console** (חינם): להוסיף את הנכס hakef.com, לשלוח את `https://hakef.com/sitemap.xml`, ולבקש סריקה ב"בדיקת כתובת URL" לדף הבית, לעמוד "בר קינוחים לאירועים" ולארבע הקטגוריות.
 6. **Bing Webmaster Tools**: לייבא את האתר מ־Search Console בלחיצה אחת.

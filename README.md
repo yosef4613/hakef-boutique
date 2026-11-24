@@ -29,7 +29,7 @@
 
 - **להוסיף או לשנות מוצר:** לערוך את `build/data/products.json`, לשים תמונה ב־`site/assets/img/` (בשם `שם-480.webp` / `שם-800.webp`) ולהריץ את הסקריפט.
 - **דף הבית:** `build/pages/home.html`.
-- **לאתר האמיתי:** `python3 build/build.py --production`. זה מוריד את ה־noindex. אחר כך מעלים את `site/` ואת `deploy/.htaccess` לשורש של hakef.com.
+- **לאתר האמיתי:** `python3 build/build.py --production --out dist`. זה בונה ל־`dist/` בלי noindex, כולל `.htaccess`, ואת `dist/` מעלים לשורש של hakef.com.
 - כתובות המוצרים והקטגוריות זהות לאתר הישן, כדי לשמור על הדירוג בגוגל.
 
 מדריך הקידום המלא: [docs/SEO.md](docs/SEO.md).
