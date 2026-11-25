@@ -389,8 +389,8 @@ def build_home(products):
     body = open(os.path.join(ROOT, 'build', 'pages', 'home.html'), encoding='utf-8').read()
     body = body.replace('{{CATEGORY_CARDS}}', category_cards(''))
     body = body.replace('href="https://wa.me/972509153197"', f'href="{wa()}"')
-    preload = ('<link rel="preload" as="image" href="assets/img/hero-tart-tall-800.webp" media="(max-width: 760px)">\n'
-               '<link rel="preload" as="image" imagesrcset="assets/img/hero-tart-800.webp 800w, assets/img/hero-tart-1200.webp 1200w, assets/img/hero-tart-1600.webp 1600w" imagesizes="100vw" media="(min-width: 761px)">\n')
+    preload = ('<link rel="preload" as="image" href="assets/img/hero-event-tall-800.webp" media="(max-width: 760px)">\n'
+               '<link rel="preload" as="image" imagesrcset="assets/img/hero-event-800.webp 800w, assets/img/hero-event-1200.webp 1200w, assets/img/hero-event-1600.webp 1600w" imagesizes="100vw" media="(min-width: 761px)">\n')
     faq_ld = {'@context': 'https://schema.org', '@type': 'FAQPage',
               'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in FAQ_GENERAL]}
     website = {'@context': 'https://schema.org', '@type': 'WebSite', 'name': SITE['name'], 'url': SITE['url'] + '/', 'inLanguage': 'he-IL',
