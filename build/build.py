@@ -322,12 +322,21 @@ def category_cards(root):
     return '<div class="cat-grid">\n        ' + '\n        '.join(cards) + '\n      </div>'
 
 
+def price_html(p, cls, note=''):
+    """מחיר "החל מ" (מהחנות הקודמת). בלי נתוני מוצר לגוגל: הם דורשים משלוח, החזרות ומזהה מוצר."""
+    if not p.get('price_from'):
+        return ''
+    unit = f' {p["price_unit"]}' if p.get('price_unit') else ''
+    extra = f' <span class="product__price-note">· {note}</span>' if note else ''
+    return f'<p class="{cls}">החל מ־<strong>{p["price_from"]} ₪</strong>{unit}{extra}</p>'
+
+
 def product_card(root, p, heading='h3'):
     return f'''<article class="p-card">
           <a href="{root}product/{p["slug"]}/">
             {img(root, p["img"], p["imgW"], p["imgH"], p["alt"], "(max-width: 760px) 46vw, 290px")}
             <{heading} class="p-card__name">{esc(p["name"])}</{heading}>
-            <p class="p-card__text">{esc(p["short"])}</p>
+            <p class="p-card__text">{esc(p["short"])}</p>{price_html(p, "p-card__price")}
           </a>
         </article>'''
 
@@ -474,6 +483,7 @@ def build_product(p, products):
       <p class="eyebrow">{cat["name"]}</p>
       <h1>{nowrap_paren(p["name"])}</h1>
       <p class="lead">{esc(p["short"])}</p>
+      {price_html(p, "product__price", "המחיר הסופי לפי העיצוב, הגודל והכמות")}
       <div class="product__cta">
         <a class="btn btn--primary" href="{wa(msg)}" target="_blank" rel="noopener" data-wa>{WA_ICON} לקבלת הצעת מחיר בוואטסאפ</a>
         <p class="micro">או <a class="text-link" href="{root}#plan">תכננו בר קינוחים שלם במתכנן</a></p>
