@@ -214,7 +214,7 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1c110c">
+<meta name="theme-color" content="#2a1a1f">
 {meta_block}
 <link rel="icon" href="{root}assets/img/logo-120.png">
 <link rel="apple-touch-icon" href="{root}assets/img/logo-240.png">
@@ -240,6 +240,7 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
       </ul>
     </nav>
     <div class="site-header__tools">
+      <a class="header-cta" href="{plan}" data-order="bar">הצעת מחיר</a>
       <a class="icon-link" href="{wa()}" target="_blank" rel="noopener" aria-label="שליחת הודעה בוואטסאפ" data-wa>{WA_ICON}</a>
       <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-list" data-menu-btn>
         <span class="visually-hidden">תפריט</span>

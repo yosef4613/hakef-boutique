@@ -6,18 +6,18 @@
 :root {
   /* פלטה מהלוגו: שוקולד (החום של האותיות), ורוד (המטרפה והעיגול), קרם.
      60% שוקולד מריר · 30% קרם וורוד בהיר · 10% ורוד הלוגו, רק על מה שלוחצים */
-  --bg: #1c110c;          /* 60% */
-  --bg-2: #22150f;
-  --surface: #2a1913;
-  --surface-2: #34211a;
-  --line: #4a2f24;
-  --ink: #f8ece6;         /* 30% */
-  --ink-2: #e3cdc3;
-  --ink-3: #b0968b;
-  --blush: #f2c1bf;       /* ורוד בהיר: כתב היד והשורות הקטנות. לא צבע הלחיצה */
-  --accent: #ea7686;      /* 10% ורוד הלוגו: לחיצות בלבד */
-  --accent-hover: #f28d9b;
-  --accent-ink: #2b1209;
+  --bg: #2a1a1f;          /* 60% שזיף כהה, עם נגיעה של ורוד הלוגו */
+  --bg-2: #2f1d23;
+  --surface: #3a242b;
+  --surface-2: #452b33;
+  --line: #5c3b45;
+  --ink: #fbf1f3;         /* 30% */
+  --ink-2: #ecd7dd;
+  --ink-3: #c4a5ae;
+  --blush: #f2b8c6;       /* ורוד בהיר: כתב היד והשורות הקטנות */
+  --accent: #e890a6;      /* 10% ורוד הלוגו: לחיצות */
+  --accent-hover: #f0a7b9;
+  --accent-ink: #2a1a1f;
   --header-h: 84px;
   --radius: 18px;
   --gutter: clamp(16px, 4vw, 48px);
@@ -56,9 +56,9 @@ button, input, textarea, select { font: inherit; color: inherit; }
 
 .eyebrow {
   display: inline-flex; align-items: center; gap: 12px;
-  font-size: 0.9rem; letter-spacing: 0; color: var(--ink-3); margin-bottom: 18px;
+  font-size: 0.9rem; letter-spacing: 0; color: var(--blush); margin-bottom: 18px;
 }
-.eyebrow::before { content: ""; width: 36px; height: 1px; background: var(--ink-3); opacity: 0.7; }
+.eyebrow::before { content: ""; width: 36px; height: 1px; background: var(--blush); opacity: 0.7; }
 
 /* ---------- כפתורים וקישורים (השכבה הקדמית) ---------- */
 .btn {
@@ -68,7 +68,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 }
 .btn--primary {
   background: var(--accent); color: var(--accent-ink);
-  box-shadow: 0 18px 40px -14px rgba(234, 118, 134, 0.55), 0 2px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: 0 18px 40px -14px rgba(232, 144, 166, 0.5), 0 2px 0 rgba(0, 0, 0, 0.25);
 }
 .btn--primary:hover { background: var(--accent-hover); }
 .btn span[aria-hidden] { font-size: 1.25em; line-height: 1; }
@@ -80,7 +80,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
   position: fixed; inset: 0 0 auto 0; z-index: 50; height: var(--header-h);
   border-bottom: 1px solid transparent;
 }
-.site-header.is-solid { background: rgba(28, 17, 12, 0.9); border-bottom-color: var(--line); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.site-header.is-solid { background: rgba(42, 26, 31, 0.9); border-bottom-color: var(--line); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
 .site-header__row { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
 .brand__text { display: flex; flex-direction: column; line-height: 1.15; }
@@ -127,8 +127,8 @@ html[data-motion="off"] .site-header.has-hero-logo .brand { transition: none; }
 .hero::before {               /* האפלה בצד הטקסט, כדי שהמילים יהיו קריאות מיד */
   content: ""; position: absolute; inset: 0; z-index: -1;
   background:
-    linear-gradient(to left, rgba(28, 17, 12,0.97) 0%, rgba(28, 17, 12,0.9) 34%, rgba(28, 17, 12,0.45) 64%, rgba(28, 17, 12,0.2) 100%),
-    linear-gradient(to bottom, rgba(28, 17, 12,0.5) 0%, transparent 22%, transparent 70%, var(--bg) 100%);
+    linear-gradient(to left, rgba(42, 26, 31, 0.97) 0%, rgba(42, 26, 31, 0.9) 34%, rgba(42, 26, 31, 0.45) 64%, rgba(42, 26, 31, 0.2) 100%),
+    linear-gradient(to bottom, rgba(42, 26, 31, 0.5) 0%, transparent 22%, transparent 70%, var(--bg) 100%);
 }
 .hero__copy { max-width: 760px; }
 .hero h1 { font-size: clamp(2.6rem, 4.7vw, 4.2rem); font-weight: 400; line-height: 1.1; margin-bottom: 22px; }
@@ -227,7 +227,7 @@ input[type="range"] { width: 100%; accent-color: var(--ink); height: 32px; curso
 .request input:not([type="checkbox"]):not([type="radio"]), .request textarea {
   width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 13px 14px; min-height: 50px; color: var(--ink);
 }
-.request input::placeholder, .request textarea::placeholder { color: #7d7064; }
+.request input::placeholder, .request textarea::placeholder { color: #9b7f88; }
 .request input:focus, .request textarea:focus { border-color: var(--ink-2); outline: 2px solid var(--accent); outline-offset: 1px; }
 .request input[type="date"] { color-scheme: dark; }
 .opt { font-weight: 400; color: var(--ink-3); }
@@ -301,7 +301,7 @@ input[type="range"] { width: 100%; accent-color: var(--ink); height: 32px; curso
 .closing { position: relative; isolation: isolate; overflow: hidden; padding-block: clamp(100px, 12vw, 170px); }
 .closing__back { position: absolute; inset: 0 auto 0 0; width: 50%; z-index: -2; }
 .closing__back img { width: 100%; height: 100%; object-fit: cover; }
-.closing::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to left, var(--bg) 45%, rgba(28, 17, 12,0.55) 75%, rgba(28, 17, 12,0.3) 100%); }
+.closing::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to left, var(--bg) 45%, rgba(42, 26, 31, 0.55) 75%, rgba(42, 26, 31, 0.3) 100%); }
 .closing__inner { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
 .closing h2 { font-size: clamp(2.3rem, 5vw, 4rem); }
 .closing p { color: var(--ink-2); font-size: 1.15rem; max-width: 30em; margin-bottom: 12px; }
@@ -371,7 +371,7 @@ input[type="range"] { width: 100%; accent-color: var(--ink); height: 32px; curso
   .hero__logo { width: 150px; margin-bottom: 6px; }
   .hero__copy > .eyebrow { display: none; }   /* בטלפון הלוגו אומר "מי", והשורה הזו דוחפת את הכפתור מתחת למסך */
   .hero .lead { margin-bottom: 22px; }
-  .hero::before { background: linear-gradient(to bottom, rgba(28, 17, 12,0.5) 0%, rgba(28, 17, 12,0.74) 30%, rgba(28, 17, 12,0.84) 62%, var(--bg) 100%); }
+  .hero::before { background: linear-gradient(to bottom, rgba(42, 26, 31, 0.5) 0%, rgba(42, 26, 31, 0.74) 30%, rgba(42, 26, 31, 0.84) 62%, var(--bg) 100%); }
   .hero__back img { object-position: 50% 55%; }
   .hero h1 { font-size: clamp(2.1rem, 9vw, 2.8rem); margin-bottom: 16px; }
   .hero__action { align-items: stretch; }
@@ -379,7 +379,7 @@ input[type="range"] { width: 100%; accent-color: var(--ink); height: 32px; curso
   .hero__edge { position: relative; left: auto; bottom: auto; width: min(74%, 320px); margin: 40px auto -86px; transform: rotate(-1.2deg); }
   .occasions p { padding-block: 112px 26px; }
   .closing__back { width: 100%; }
-  .closing::before { background: linear-gradient(to bottom, rgba(28, 17, 12,0.72), rgba(28, 17, 12,0.93)); }
+  .closing::before { background: linear-gradient(to bottom, rgba(42, 26, 31, 0.72), rgba(42, 26, 31, 0.93)); }
   .closing__inner .btn { width: 100%; }
   .gallery { columns: 2; column-gap: 10px; }
   .g-item { margin-bottom: 10px; }
@@ -568,7 +568,7 @@ html[data-motion="off"] .steps { --p: 1 !important; }
   background:
     radial-gradient(120% 90% at 85% 10%, rgba(234, 118, 134,0.10), transparent 60%),
     repeating-linear-gradient(135deg, rgba(248, 236, 230,0.035) 0 1px, transparent 1px 14px),
-    linear-gradient(160deg, #2e1c15, #1a100b);
+    linear-gradient(160deg, #3a2229, #22141a);
   border-bottom: 1px solid var(--line);
 }
 .recipe-cover__brand { font-size: 0.82rem; letter-spacing: 0.08em; color: var(--ink-3); }
@@ -708,7 +708,7 @@ html.js .wa-float.is-visible { opacity: 1; transform: none; pointer-events: auto
   background:
     radial-gradient(120% 90% at 85% 10%, rgba(248, 236, 230, 0.07), transparent 60%),
     repeating-linear-gradient(135deg, rgba(248, 236, 230, 0.035) 0 1px, transparent 1px 14px),
-    linear-gradient(160deg, #2e1c15, #1a100b);
+    linear-gradient(160deg, #3a2229, #22141a);
 }
 
 /* "רקע, אמצע, חזית" גם בעמודים הפנימיים: צילום אמיתי ברקע הראש, והרשימה "שוברת את הקצה" לתוכו */
@@ -718,8 +718,8 @@ html.js .wa-float.is-visible { opacity: 1; transform: none; pointer-events: auto
 .page-band::before {
   content: ""; position: absolute; inset: 0; z-index: -1;
   background:
-    linear-gradient(to left, rgba(28, 17, 12, 0.96) 0%, rgba(28, 17, 12, 0.88) 45%, rgba(28, 17, 12, 0.6) 100%),
-    linear-gradient(to bottom, rgba(28, 17, 12, 0.55) 0%, transparent 30%, transparent 62%, var(--bg) 100%);
+    linear-gradient(to left, rgba(42, 26, 31, 0.96) 0%, rgba(42, 26, 31, 0.88) 45%, rgba(42, 26, 31, 0.6) 100%),
+    linear-gradient(to bottom, rgba(42, 26, 31, 0.55) 0%, transparent 30%, transparent 62%, var(--bg) 100%);
 }
 .page-band .page-head { padding-bottom: 0; }
 .overlap { position: relative; z-index: 2; margin-top: calc(-1 * clamp(56px, 6vw, 84px)); }
@@ -741,7 +741,7 @@ html.js .wa-float.is-visible { opacity: 1; transform: none; pointer-events: auto
   .product__media img { aspect-ratio: 4 / 3; }
 }
 @media (max-width: 760px) {
-  .page-band::before { background: linear-gradient(to bottom, rgba(28, 17, 12, 0.72), rgba(28, 17, 12, 0.86) 60%, var(--bg)); }
+  .page-band::before { background: linear-gradient(to bottom, rgba(42, 26, 31, 0.72), rgba(42, 26, 31, 0.86) 60%, var(--bg)); }
 }
 
 /* הכפתור הצף מופיע ונעלם מיד, בלי החלקה: כך במסך עם הרצועה המונפשת רק דבר אחד זז */
@@ -775,7 +775,7 @@ h1, h2, h3 { text-wrap: balance; }   /* בלי מילה יתומה בשורה ה
 .btn--primary svg { flex: none; width: 22px; height: 22px; }
 
 /* שדות טופס עם גבול שרואים (ניגודיות 3.8:1 מול הכרטיס), ותיבות סימון בצבע של מה שלוחצים עליו */
-:root { --field-line: #8f7262; }
+:root { --field-line: #a07a86; }
 .request input:not([type="checkbox"]):not([type="radio"]), .request textarea,
 .talk__form input[type="text"], .talk__form input[type="email"], .talk__form textarea,
 .news input[type="text"], .news input[type="email"] { border-color: var(--field-line); }
@@ -893,5 +893,51 @@ h1, h2, h3 { text-wrap: balance; }   /* בלי מילה יתומה בשורה ה
      למעלה, מאחורי הכותרת, ההאפלה נשארת חזקה */
   .hero__back { bottom: auto; height: 760px; }
   .hero__back img { object-position: 50% 55%; }
-  .hero::before { background: linear-gradient(to bottom, rgba(28, 17, 12, 0.55) 0px, rgba(28, 17, 12, 0.84) 190px, rgba(28, 17, 12, 0.84) 400px, rgba(28, 17, 12, 0.42) 590px, var(--bg) 760px); }
+  .hero::before { background: linear-gradient(to bottom, rgba(42, 26, 31, 0.55) 0px, rgba(42, 26, 31, 0.84) 190px, rgba(42, 26, 31, 0.84) 400px, rgba(42, 26, 31, 0.42) 590px, var(--bg) 760px); }
+}
+
+/* =====================================================================
+   פתיחה בצבעי הלוגו: שזיף כהה עם זוהר ורוד, וצילום המוסים ממוסגר לצד הטקסט.
+   בטלפון הצילום נשאר ברקע המסך הראשון (מאחורי הכפתור), כמו קודם.
+   ===================================================================== */
+.header-cta { display: inline-flex; align-items: center; height: 40px; padding: 0 18px; border: 1px solid var(--accent); border-radius: 999px;
+  color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.95rem; white-space: nowrap; }
+.header-cta:hover { background: var(--accent); color: var(--accent-ink); }
+@media (max-width: 900px) { .header-cta { display: none; } }
+
+.hero h1 .soft { display: block; font-size: 1.08em; line-height: 1.12; margin-top: 8px; }
+
+@media (min-width: 761px) {
+  .hero { padding-block: calc(var(--header-h) + 28px) clamp(70px, 8vw, 110px); }
+  .hero::before { background: radial-gradient(60% 70% at 80% 40%, rgba(232, 144, 166, 0.16), transparent 70%),
+    radial-gradient(50% 60% at 15% 70%, rgba(232, 144, 166, 0.08), transparent 70%); }
+  .hero__inner { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: clamp(32px, 4.5vw, 72px); align-items: center; }
+  .hero__copy { max-width: none; }
+  .hero__media { position: relative; align-self: center; }
+  .hero__media .hero__back { position: relative; inset: auto; height: auto; z-index: auto; display: block; }
+  .hero__media .hero__back img { width: 100%; height: auto; aspect-ratio: 4 / 3.3; object-fit: cover; object-position: 30% 55%;
+    filter: none; border-radius: 22px; box-shadow: 0 36px 70px -30px rgba(0, 0, 0, 0.75); }
+  .hero__media .hero__edge { position: absolute; inset-inline-start: auto; inset-inline-end: -4%; left: auto; bottom: -16%; margin: 0;
+    width: 32%; transform: rotate(-2deg); padding: 7px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
+  .hero__media .hero__edge img { border-radius: 9px; }
+  .hero__media .hero__edge figcaption { display: none; }
+  .occasions__list { max-width: none; }
+}
+@media (min-width: 761px) and (max-width: 1099px) {
+  .hero { flex-direction: row; align-items: center; padding-bottom: 90px; }
+  .hero__inner { grid-template-columns: 1fr; }
+  .hero__media { width: min(100%, 560px); justify-self: center; }
+}
+@media (max-width: 760px) {
+  .hero__media { position: static; }
+}
+@media (min-width: 761px) {
+  /* בעמודת טקסט צרה יותר: כותרת קטנה מעט, והכפתור נשאר במסך הראשון */
+  .hero h1 { font-size: clamp(2.2rem, 3.2vw, 3.15rem); }
+  .hero h1 .soft { font-size: 1.04em; }
+  .hero__logo { width: 200px; }
+}
+@media (min-width: 761px) and (max-height: 820px) {
+  .hero__logo { width: 140px; }
+  .hero h1 { font-size: clamp(2rem, 2.9vw, 2.8rem); }
 }
