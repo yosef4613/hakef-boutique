@@ -351,14 +351,42 @@
     return ok;
   }
   if (req) {
-    var mailLink = $('[data-mail]', req);
-    if (mailLink) {
-      mailLink.addEventListener('click', function () {
-        mailLink.href = 'mailto:' + BUSINESS_MAIL + '?subject=' + encodeURIComponent('בקשת הצעת מחיר מהאתר') + '&body=' + encodeURIComponent(buildMessage());
+    /* שליחה במייל: ישר לתיבה של העסק דרך השרת, בלי וואטסאפ ובלי תוכנת מייל */
+    var mailBtn = $('[data-send-mail]', req);
+    var mailStatus = $('[data-mail-status]', req);
+    var phoneErr = $('#r-phone-err');
+    var phoneErrText = phoneErr ? phoneErr.textContent : '';
+    var shownAt = Date.now();
+    function link(href, text) { var a = document.createElement('a'); a.className = 'text-link'; a.href = href; a.textContent = text; return a; }
+    if (mailBtn) {
+      mailBtn.addEventListener('click', function () {
+        var okName = check(req.elements.name, req.elements.name.value.trim().length > 1);
+        var phoneVal = req.elements.phone.value.trim();
+        if (phoneErr) phoneErr.textContent = phoneVal ? phoneErrText : 'כדי לשלוח במייל צריך טלפון, כדי שנחזור אליכם';
+        var okPhone = check(req.elements.phone, !!phoneVal && validPhone(phoneVal));
+        if (!okName || !okPhone) { (okName ? req.elements.phone : req.elements.name).focus(); return; }
+        mailBtn.disabled = true;
+        if (mailStatus) mailStatus.textContent = 'שולחים…';
+        fetch('/wp-json/hakef/v1/request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: req.elements.name.value.trim(), phone: phoneVal, message: buildMessage(), page: location.href, website: req.elements.website ? req.elements.website.value : '', t: Date.now() - shownAt })
+        }).then(function (r) {
+          return r.json().catch(function () { return {}; }).then(function (res) { if (!r.ok || !res.ok) throw new Error(res.error || r.status); });
+        }).then(function () {
+          if (mailStatus) mailStatus.textContent = '';
+          var md = $('[data-mail-done]', req);
+          if (md) { md.hidden = false; md.focus({ preventScroll: false }); }
+        }).catch(function () {
+          if (!mailStatus) return;
+          mailStatus.textContent = '';
+          mailStatus.append('לא הצלחנו לשלוח מכאן. אפשר ', link('mailto:' + BUSINESS_MAIL + '?subject=' + encodeURIComponent('בקשת הצעת מחיר מהאתר') + '&body=' + encodeURIComponent(buildMessage()), 'לשלוח מתוכנת המייל'), ' או להתקשר ל־', link('tel:0509153197', '050-915-3197'), '.');
+        }).then(function () { mailBtn.disabled = false; });
       });
     }
     req.addEventListener('submit', function (e) {
       e.preventDefault();
+      if (phoneErr) phoneErr.textContent = phoneErrText;
       var okName = check(req.elements.name, req.elements.name.value.trim().length > 1);
       var phoneVal = req.elements.phone.value.trim();
       var okPhone = check(req.elements.phone, !phoneVal || validPhone(phoneVal));

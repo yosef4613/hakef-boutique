@@ -112,7 +112,7 @@ def jsonld(obj):
 
 
 # בונה האתר: מופיע בתחתית כל עמוד ובנתונים שגוגל קורא
-BUILDER = {'name': 'יוסף יהודה גורדון', 'url': 'https://yosef4613.github.io/yyg-site/'}
+BUILDER = {'name': 'יוסף יהודה גורדון', 'url': 'https://yygweb.com/'}
 
 BUSINESS = {
     '@context': 'https://schema.org', '@type': 'Bakery', '@id': SITE['url'] + '/#business',
