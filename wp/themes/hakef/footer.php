@@ -28,6 +28,7 @@
           <li><a href="/product-category/מארזים/">מארזי מתוקים</a></li>
           <li><a href="/product-category/פינגר-פוד/">מגשי אירוח ופינגר פוד</a></li>
           <li><a href="/shop/">כל המוצרים</a></li>
+          <li><a href="/prices/">מחירון</a></li>
       </ul>
     </div>
     <div>
@@ -52,7 +53,7 @@
   <a class="btn btn--primary" href="/#plan" data-order="bar" tabindex="-1">קבלו הצעת מחיר <span aria-hidden="true">←</span></a>
 </div>
 
-<script src="/assets/js/site.js?v=463d97b8" defer></script>
+<script src="/assets/js/site.js?v=662fbe3d" defer></script>
 <?php wp_footer(); ?>
 </body>
 </html>

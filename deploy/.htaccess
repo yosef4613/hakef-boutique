@@ -11,6 +11,16 @@ RewriteCond %{HTTP_HOST} ^www\. [NC]
 RewriteRule ^(.*)$ https://hakef.com/$1 [R=301,L]
 # אבטחה: חסימת xmlrpc
 RewriteRule ^xmlrpc\.php$ - [F,L]
+# סוכנים: מי שמבקש Markdown (Accept: text/markdown) מקבל את index.md של אותו עמוד
+RewriteCond %{HTTP_ACCEPT} text/markdown [NC]
+RewriteCond %{DOCUMENT_ROOT}/index.md -f
+RewriteRule ^$ /index.md [L]
+RewriteCond %{HTTP_ACCEPT} text/markdown [NC]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_FILENAME}/index.md -f
+RewriteRule ^(.+?)/?$ /$1/index.md [L]
+# שרת MCP לסוכנים (קריאה בלבד), דרך וורדפרס
+RewriteRule ^mcp/?$ /index.php?rest_route=/hakef/v1/mcp [QSA,L]
 # כתובות ישנות
 RewriteRule ^product-category/(כללי|שוקולד|קרמים-ומליות|קישוטים-אכילים)/?.*$ /shop/ [R=301,L,NE]
 RewriteRule ^product-category/עוגות/(עוגות-בהזמנה|עוגות-מוס)/?$ /product-category/%D7%A2%D7%95%D7%92%D7%95%D7%AA/ [R=301,L,NE]
@@ -45,6 +55,10 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 
+# קבצים לסוכנים
+AddType text/markdown .md
+AddCharset utf-8 .md .txt .json
+
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresByType image/webp "access plus 1 year"
@@ -70,5 +84,21 @@ RewriteRule . /index.php [L]
   # מדיניות תוכן לעמודים הסטטיים: רק קבצים מהאתר עצמו, והסקריפט המוטמע מאושר לפי טביעת אצבע
   <FilesMatch "\.html$">
     Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-ekDQG8lLiVtMSjGDMRbTKAsnE3Z794cca/qeYOeoT44='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+  </FilesMatch>
+  # כל עמוד מצביע על גרסת ה־Markdown שלו ועל llms.txt (RFC 8288). התשובה משתנה לפי Accept
+  <FilesMatch "^index\.(html|md)$">
+    Header append Vary "Accept"
+    Header add Link '<index.md>; rel="alternate"; type="text/markdown"'
+    Header add Link '</llms.txt>; rel="describedby"; type="text/plain"'
+    Header add Link '</.well-known/mcp/server-card.json>; rel="service-desc"; type="application/json"'
+  </FilesMatch>
+  <FilesMatch "\.md$">
+    Header set Content-Type "text/markdown; charset=utf-8"
+  </FilesMatch>
+  <FilesMatch "^(llms|robots)\.txt$">
+    Header set Content-Type "text/plain; charset=utf-8"
+  </FilesMatch>
+  <FilesMatch "^(llms\.txt|server-card\.json|catalog\.json|index\.md)$">
+    Header set Access-Control-Allow-Origin "*"
   </FilesMatch>
 </IfModule>

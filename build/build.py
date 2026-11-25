@@ -32,6 +32,8 @@ SITE = {
     'email': 'r0509153197@gmail.com',
     'area': 'ירושלים והסביבה',
 }
+# פרופילים חיצוניים של העסק (פייסבוק, אינסטגרם, פרופיל העסק בגוגל). רק קישורים אמיתיים שבעלת העסק אישרה
+SAME_AS = []
 WA_DEFAULT = 'שלום, הגעתי מהאתר של הכיף שבאפיה ואשמח לפרטים'
 
 CATEGORIES = [
@@ -115,7 +117,7 @@ def jsonld(obj):
 BUILDER = {'name': 'יוסף יהודה גורדון', 'url': 'https://yygweb.com/'}
 
 BUSINESS = {
-    '@context': 'https://schema.org', '@type': 'Bakery', '@id': SITE['url'] + '/#business',
+    '@context': 'https://schema.org', '@type': ['Bakery', 'LocalBusiness'], '@id': SITE['url'] + '/#business',
     'name': SITE['name'],
     'description': 'קייטרינג קינוחים בוטיק: בר קינוחים ופטיפורים, מגשי פטיפורים, עוגות מעוצבות ומארזי מתוקים בהזמנה אישית לאירועים.',
     'url': SITE['url'] + '/', 'telephone': '+972-50-915-3197', 'email': SITE['email'],
@@ -126,7 +128,11 @@ BUSINESS = {
     'servesCuisine': ['קינוחים', 'פטיפורים', 'עוגות'],
     'paymentAccepted': 'ביט, העברה בנקאית',
     'contactPoint': {'@type': 'ContactPoint', 'telephone': '+972-50-915-3197', 'contactType': 'הזמנות', 'availableLanguage': 'Hebrew'},
+    'priceRange': '₪₪', 'currenciesAccepted': 'ILS', 'knowsLanguage': 'he',
+    'hasMenu': SITE['url'] + '/prices/',
 }
+if SAME_AS:
+    BUSINESS['sameAs'] = SAME_AS
 
 
 def breadcrumbs(root, items):
@@ -177,6 +183,8 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
     if write:
         PAGES_FOR_SITEMAP.append(canonical)
     robots = '' if PRODUCTION else '<meta name="robots" content="noindex">\n'
+    if write:
+        robots += '<link rel="alternate" type="text/markdown" href="index.md">\n'
     lds = '\n'.join(jsonld(x) for x in extra_ld)
     nav_items = '\n'.join(
         f'        <li><a href="{root}{p}"{" aria-current=\"page\"" if p == path else ""}>{n}</a></li>' for n, p in NAV)
@@ -277,6 +285,7 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
           <li><a href="{root}בר-קינוחים-לאירועים/">בר קינוחים לאירועים</a></li>
 {cat_links}
           <li><a href="{root}shop/">כל המוצרים</a></li>
+          <li><a href="{root}prices/">מחירון</a></li>
       </ul>
     </div>
     <div>
@@ -575,6 +584,43 @@ def build_bar_page(products):
            body, extra_ld=[crumbs_ld, service, faq_ld], og_img='ev-bar-event-646.webp')
 
 
+def build_prices_page(products):
+    """מחירון: מחירי ההתחלה של כל המוצרים בעמוד אחד, בטקסט רגיל (בלי נתוני מוצר לגוגל)."""
+    path, root = 'prices/', '../'
+    crumbs, crumbs_ld = breadcrumbs(root, [('מחירון', None)])
+    sections = []
+    for c in CATEGORIES:
+        items = [p for p in products if p['cats'][0] == c['slug']]
+        if not items:
+            continue
+        rows = ''.join(
+            f'<tr><th scope="row"><a class="text-link" href="{root}product/{p["slug"]}/">{esc(p["name"])}</a></th>'
+            f'<td>{("החל מ־<strong>" + str(p["price_from"]) + " ₪</strong>" + (" " + p["price_unit"] if p.get("price_unit") else "")) if p.get("price_from") else "לפי הצעת מחיר"}</td></tr>'
+            for p in items)
+        sections.append(f'<section class="price-sec" aria-labelledby="pc-{c["slug"]}"><h2 id="pc-{c["slug"]}">'
+                        f'<a href="{root}product-category/{c["slug"]}/">{c["name"]}</a></h2>'
+                        f'<table class="price-table"><thead><tr><th scope="col">מוצר</th><th scope="col">מחיר</th></tr></thead><tbody>{rows}</tbody></table></section>')
+    head = f'''  <header class="page-head container">
+    <p class="eyebrow">מחירון</p>
+    <h1>מחירון: קינוחים, עוגות ומגשים לאירוע</h1>
+    <p class="lead">אלה מחירי התחלה. המחיר הסופי נקבע לפי העיצוב, הגודל והכמות, ומאושר איתכם לפני שמתחילים להכין. בר קינוחים מתומחר לפי מספר האורחים, בהצעת מחיר אישית.</p>
+    <a class="btn btn--primary" href="{root}#plan" data-order="bar">תכננו את הבר וקבלו הצעת מחיר <span aria-hidden="true">←</span></a>
+  </header>'''
+    body = f'''{crumbs}
+{head}
+  <div class="container prices">
+    {"".join(sections)}
+    <p class="micro">כל המחירים בשקלים וכוללים מע״מ כחוק. משלוח או הקמה במקום בתיאום. {SITE["area"]}.</p>
+  </div>
+  {cta_band(root, "מתכננים אירוע?", "ענו על כמה שאלות במתכנן, וקבלו הערכה של הכמות והצעת מחיר אישית.")}'''
+    itemlist = {'@context': 'https://schema.org', '@type': 'ItemList', 'name': 'מחירון הכיף שבאפיה',
+                'itemListElement': [{'@type': 'ListItem', 'position': i, 'url': abs_url(f'product/{p["slug"]}/'), 'name': p['name']}
+                                    for i, p in enumerate(products, 1)]}
+    layout(path, 'מחירון: בר קינוחים, פטיפורים ועוגות מעוצבות | הכיף שבאפיה',
+           'מחירי התחלה לעוגות מעוצבות, מגשי פטיפורים, מארזי מתוקים ומגשי אירוח. בר קינוחים לפי מספר האורחים, בהצעת מחיר אישית. ירושלים והסביבה.',
+           body, extra_ld=[crumbs_ld, itemlist])
+
+
 def simple_page(path, title, desc, h1, eyebrow, inner, crumbs_name, back=None, intro='', overlap=False, mobile_cta=True):
     """intro: משפט פתיחה בתוך הרצועה העליונה. overlap: התוכן עולה לתוך שולי התמונה (שבירת הקצה)."""
     root = '../' * len([x for x in path.split('/') if x])
@@ -679,7 +725,7 @@ def build_sitemap_robots():
     open(os.path.join(OUT, 'sitemap.xml'), 'w', encoding='utf-8').write(
         f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}\n</urlset>\n')
     open(os.path.join(OUT, 'robots.txt'), 'w', encoding='utf-8').write(
-        f'User-agent: *\nAllow: /\nDisallow: /wp-admin/\nAllow: /wp-admin/admin-ajax.php\n\nSitemap: {SITE["url"]}/sitemap.xml\nSitemap: {SITE["url"]}/wp-sitemap.xml\n')
+        f'User-agent: *\nContent-Signal: search=yes, ai-input=yes, ai-train=no\nAllow: /\nDisallow: /wp-admin/\nAllow: /wp-admin/admin-ajax.php\n\nSitemap: {SITE["url"]}/sitemap.xml\nSitemap: {SITE["url"]}/wp-sitemap.xml\n')
 
 
 def build_htaccess():
@@ -705,6 +751,11 @@ def build_htaccess():
              '# HTTPS ובלי www', 'RewriteCond %{HTTPS} !=on [OR]', 'RewriteCond %{HTTP_HOST} ^www\\. [NC]',
              'RewriteRule ^(.*)$ https://hakef.com/$1 [R=301,L]',
              '# אבטחה: חסימת xmlrpc', 'RewriteRule ^xmlrpc\\.php$ - [F,L]',
+             '# סוכנים: מי שמבקש Markdown (Accept: text/markdown) מקבל את index.md של אותו עמוד',
+             'RewriteCond %{HTTP_ACCEPT} text/markdown [NC]', 'RewriteCond %{DOCUMENT_ROOT}/index.md -f', 'RewriteRule ^$ /index.md [L]',
+             'RewriteCond %{HTTP_ACCEPT} text/markdown [NC]', 'RewriteCond %{REQUEST_FILENAME} -d', 'RewriteCond %{REQUEST_FILENAME}/index.md -f',
+             'RewriteRule ^(.+?)/?$ /$1/index.md [L]',
+             '# שרת MCP לסוכנים (קריאה בלבד), דרך וורדפרס', 'RewriteRule ^mcp/?$ /index.php?rest_route=/hakef/v1/mcp [QSA,L]',
              '# כתובות ישנות']
     for src, dst in rules:
         lines.append(f'RewriteRule ^{src}$ /{urllib.parse.quote(dst)} [R=301,L,NE]')  # יעד מקודד, כדי שכותרת Location תהיה ASCII תקני
@@ -712,6 +763,7 @@ def build_htaccess():
               'RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]',
               'RewriteRule ^index\\.php$ - [L]', 'RewriteCond %{REQUEST_FILENAME} !-f', 'RewriteCond %{REQUEST_FILENAME} !-d',
               'RewriteRule . /index.php [L]',
+              '', '# קבצים לסוכנים', 'AddType text/markdown .md', 'AddCharset utf-8 .md .txt .json',
               '', '<IfModule mod_expires.c>', '  ExpiresActive On',
               '  ExpiresByType image/webp "access plus 1 year"', '  ExpiresByType image/jpeg "access plus 1 year"', '  ExpiresByType image/png "access plus 1 year"',
               '  ExpiresByType font/woff2 "access plus 1 year"',
@@ -728,6 +780,18 @@ def build_htaccess():
               '  # מדיניות תוכן לעמודים הסטטיים: רק קבצים מהאתר עצמו, והסקריפט המוטמע מאושר לפי טביעת אצבע',
               '  <FilesMatch "\\.html$">',
               f'    Header set Content-Security-Policy "default-src \'self\'; script-src \'self\' {csp_hash(MOTION_SCRIPT)}; style-src \'self\' \'unsafe-inline\'; img-src \'self\' data:; font-src \'self\'; connect-src \'self\'; object-src \'none\'; base-uri \'self\'; form-action \'self\'; frame-ancestors \'self\'; upgrade-insecure-requests"',
+              '  </FilesMatch>',
+              '  # כל עמוד מצביע על גרסת ה־Markdown שלו ועל llms.txt (RFC 8288). התשובה משתנה לפי Accept',
+              '  <FilesMatch "^index\\.(html|md)$">',
+              '    Header append Vary "Accept"',
+              "    Header add Link '<index.md>; rel=\"alternate\"; type=\"text/markdown\"'",
+              "    Header add Link '</llms.txt>; rel=\"describedby\"; type=\"text/plain\"'",
+              "    Header add Link '</.well-known/mcp/server-card.json>; rel=\"service-desc\"; type=\"application/json\"'",
+              '  </FilesMatch>',
+              '  <FilesMatch "\\.md$">', '    Header set Content-Type "text/markdown; charset=utf-8"', '  </FilesMatch>',
+              '  <FilesMatch "^(llms|robots)\\.txt$">', '    Header set Content-Type "text/plain; charset=utf-8"', '  </FilesMatch>',
+              '  <FilesMatch "^(llms\\.txt|server-card\\.json|catalog\\.json|index\\.md)$">',
+              '    Header set Access-Control-Allow-Origin "*"',
               '  </FilesMatch>',
               '</IfModule>', '']
     os.makedirs(os.path.join(ROOT, 'deploy'), exist_ok=True)
@@ -882,6 +946,7 @@ def main():
     for p in products:
         build_product(p, products)
     build_bar_page(products)
+    build_prices_page(products)
     build_static_pages()
     build_404()
     if not PRODUCTION:
@@ -900,6 +965,10 @@ def main():
         key = open(os.path.join(ROOT, 'build', 'data', 'indexnow-key.txt')).read().strip()
         with open(os.path.join(OUT, key + '.txt'), 'w') as f:
             f.write(key)
+    import agent_files
+    recipes = json.load(open(os.path.join(ROOT, 'build', 'data', 'recipes.json'), encoding='utf-8'))
+    n_md = agent_files.write_all(OUT, SITE, CATEGORIES, products, recipes, abs_url)
+    print(f'קבצים לסוכנים: {n_md} עמודי Markdown, llms.txt, catalog.json, כרטיס שרת MCP')
     print(f'נבנו {len(PAGES_FOR_SITEMAP)} עמודים ל-{OUT}', '(production)' if PRODUCTION else '(תצוגה מקדימה, noindex)')
 
 

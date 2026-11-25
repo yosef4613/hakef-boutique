@@ -453,6 +453,75 @@
   /* הדפסת מתכון */
   $$('[data-print]').forEach(function (b) { b.addEventListener('click', function () { window.print(); }); });
 
+  /* ---------- כלים לסוכני בינה מלאכותית בדפדפן (WebMCP) ----------
+     סוכן שפועל בתוך הדפדפן יכול לקבל מהעמוד מחירים, הערכת כמויות ונוסח בקשה.
+     שום כלי לא שולח הודעה: הלקוח שולח בעצמו. */
+  (function () {
+    var mc = navigator.modelContext;
+    if (!mc) return;
+    var asText = function (o) { return { content: [{ type: 'text', text: typeof o === 'string' ? o : JSON.stringify(o) }] }; };
+    var catalogP = null;
+    var getCatalog = function () {
+      if (!catalogP) catalogP = fetch('/assets/data/catalog.json').then(function (r) { return r.json(); });
+      return catalogP;
+    };
+    var tools = [
+      {
+        name: 'get_prices',
+        description: 'מחירי ההתחלה של המוצרים של הכיף שבאפיה (עוגות מעוצבות, פטיפורים, מארזים ומגשי אירוח) בשקלים, עם קישור לכל מוצר.',
+        inputSchema: { type: 'object', properties: { category: { type: 'string', description: 'סינון לפי קטגוריה, למשל עוגות או מארזים. לא חובה.' } } },
+        annotations: { readOnlyHint: true },
+        execute: function (input) {
+          return getCatalog().then(function (c) {
+            var cat = input && input.category ? String(input.category) : '';
+            var list = c.products.filter(function (p) { return !cat || (p.category + ' ' + p.name).indexOf(cat) !== -1; });
+            return asText({ currency: c.currency, note: c.price_note, prices_page: c.business.prices_page, products: list });
+          });
+        }
+      },
+      {
+        name: 'estimate_dessert_bar',
+        description: 'מעריך כמה יחידות פטיפורים וקינוחים צריך לאירוע לפי מספר האורחים ותפקיד הבר, עם הרכב מומלץ. הערכה ראשונית בלבד.',
+        inputSchema: { type: 'object', properties: {
+          guests: { type: 'integer', minimum: 10, maximum: 1000, description: 'מספר האורחים.' },
+          role: { type: 'string', enum: ['after', 'main'], description: 'after: קינוח אחרי ארוחה. main: הבר הוא הכיבוד המרכזי.' }
+        }, required: ['guests'] },
+        annotations: { readOnlyHint: true },
+        execute: function (input) {
+          var g = Math.max(10, Math.min(1000, Math.round(Number(input && input.guests) || 0)));
+          var role = input && input.role === 'main' ? 'main' : 'after';
+          var total = round10(g * PLAN.perGuest[role]);
+          return asText({
+            guests: g, role: role === 'main' ? 'הכיבוד המרכזי באירוע' : 'קינוח אחרי ארוחה', total_units: total,
+            mix: PLAN.mix.map(function (m) { return { item: m.label, units: round10(total * m.share) }; }),
+            add_cake: g >= PLAN.cakeFromGuests,
+            note: 'הערכה ראשונית. ההרכב, הטעמים והמחיר נקבעים בהצעת מחיר אישית.'
+          });
+        }
+      },
+      {
+        name: 'prepare_quote_request',
+        description: 'מכין נוסח בקשה להצעת מחיר וקישור וואטסאפ לעסק. לא שולח דבר: הלקוח פותח את הקישור ולוחץ שליחה בעצמו.',
+        inputSchema: { type: 'object', properties: {
+          name: { type: 'string' }, event_type: { type: 'string' }, guests: { type: 'integer' },
+          date: { type: 'string' }, location: { type: 'string' }, items: { type: 'string' }, notes: { type: 'string' }
+        } },
+        annotations: { readOnlyHint: true },
+        execute: function (input) {
+          var labels = { name: 'שם', event_type: 'סוג האירוע', guests: 'מספר אורחים', date: 'תאריך', location: 'מקום', items: 'מה מזמינים', notes: 'הערות' };
+          var lines = ['שלום, אשמח לקבל הצעת מחיר.', ''];
+          Object.keys(labels).forEach(function (k) { if (input && input[k] !== undefined && String(input[k]).trim()) lines.push(labels[k] + ': ' + String(input[k]).trim().slice(0, 300)); });
+          var msg = lines.join('\n');
+          return asText({ message: msg, whatsapp_url: 'https://wa.me/' + BUSINESS_WA + '?text=' + encodeURIComponent(msg), note: 'לא נשלח דבר. הלקוח צריך לפתוח את הקישור וללחוץ שליחה.' });
+        }
+      }
+    ];
+    try {
+      if (typeof mc.registerTool === 'function') tools.forEach(function (t) { mc.registerTool(t); });
+      else if (typeof mc.provideContext === 'function') mc.provideContext({ tools: tools });
+    } catch (e) {}
+  })();
+
   var y = $('[data-year]');
   if (y) y.textContent = new Date().getFullYear();
 })();

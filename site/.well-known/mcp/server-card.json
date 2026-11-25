@@ -1,0 +1,54 @@
+{
+ "name": "com.hakef/dessert-catering",
+ "title": "הכיף שבאפיה",
+ "version": "1.0.0",
+ "description": "מידע על הכיף שבאפיה, קייטרינג קינוחים בוטיק בירושלים: מוצרים ומחירי התחלה, הערכת כמויות לבר קינוחים והכנת בקשה להצעת מחיר. קריאה בלבד, בלי הרשמה.",
+ "websiteUrl": "https://hakef.com/",
+ "serverInfo": {
+  "name": "hakef",
+  "title": "הכיף שבאפיה",
+  "version": "1.0.0"
+ },
+ "protocolVersion": "2025-06-18",
+ "endpoint": "https://hakef.com/mcp",
+ "transport": {
+  "type": "streamable-http",
+  "url": "https://hakef.com/mcp"
+ },
+ "remotes": [
+  {
+   "type": "streamable-http",
+   "url": "https://hakef.com/mcp"
+  }
+ ],
+ "authentication": {
+  "required": false
+ },
+ "capabilities": {
+  "tools": {
+   "listChanged": false
+  }
+ },
+ "tools": [
+  {
+   "name": "get_business_info",
+   "title": "פרטי העסק",
+   "description": "פרטי הכיף שבאפיה: מה העסק מכין, אזור שירות, כשרות, תשלום, איך מזמינים ודרכי קשר."
+  },
+  {
+   "name": "list_products",
+   "title": "מוצרים ומחירים",
+   "description": "רשימת המוצרים עם קישור, תיאור קצר ומחיר התחלה בשקלים. אפשר לסנן לפי קטגוריה."
+  },
+  {
+   "name": "estimate_dessert_bar",
+   "title": "הערכת כמויות לבר קינוחים",
+   "description": "מעריך כמה יחידות פטיפורים צריך לאירוע לפי מספר האורחים ותפקיד הבר, עם הרכב מומלץ."
+  },
+  {
+   "name": "prepare_quote_request",
+   "title": "הכנת בקשה להצעת מחיר",
+   "description": "מכין נוסח בקשה להצעת מחיר וקישור וואטסאפ אליו. לא שולח דבר: הלקוח שולח בעצמו."
+  }
+ ]
+}
