@@ -34,6 +34,8 @@ SITE = {
 }
 # פרופילים חיצוניים של העסק (פייסבוק, אינסטגרם, פרופיל העסק בגוגל). רק קישורים אמיתיים שבעלת העסק אישרה
 SAME_AS = []
+# כניסה עם Google: True אחרי שהוזנו המפתחות בהגדרות וורדפרס (הגדרות ← כניסה עם Google)
+GOOGLE_LOGIN = False
 WA_DEFAULT = 'שלום, הגעתי מהאתר של הכיף שבאפיה ואשמח לפרטים'
 
 CATEGORIES = [
@@ -188,10 +190,13 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
     lds = '\n'.join(jsonld(x) for x in extra_ld)
     nav_items = '\n'.join(
         f'        <li><a href="{root}{p}"{" aria-current=\"page\"" if p == path else ""}>{n}</a></li>' for n, p in NAV)
+    if GOOGLE_LOGIN:
+        nav_items += '\n        <li class="nav-login"><a href="/wp-json/hakef/v1/google/start" data-login>כניסה עם Google</a></li>'
     nav_items += ('\n        <li class="nav-motion"><button class="motion-toggle motion-toggle--nav" type="button" aria-pressed="false" data-motion-toggle>'
                   '<span class="motion-toggle__label">תנועה: פועלת</span></button></li>')
     og_abs = SITE['url'] + '/assets/img/' + urllib.parse.quote(og_img)
     plan = f'{root}#plan' if (depth or root_override) else '#plan'
+    login_link = ('<a class="header-login" href="/wp-json/hakef/v1/google/start" data-login>כניסה</a>\n      ' if GOOGLE_LOGIN else '')
     cat_links = '\n'.join(f'          <li><a href="{root}product-category/{c["slug"]}/">{c["name"]}</a></li>' for c in CATEGORIES)
     meta_block = f'''<title>{esc(title)}</title>
 <meta name="description" content="{esc(desc)}">
@@ -248,7 +253,8 @@ def layout(path, title, desc, body, extra_ld=(), og_img='og-image.jpg', preload=
       </ul>
     </nav>
     <div class="site-header__tools">
-      <a class="header-cta" href="{plan}" data-order="bar">הצעת מחיר</a>
+      <a class="header-admin" href="/wp-admin/" data-admin hidden>אזור ניהול</a>
+      {login_link}<a class="header-cta" href="{plan}" data-order="bar">הצעת מחיר</a>
       <a class="icon-link" href="{wa()}" target="_blank" rel="noopener" aria-label="שליחת הודעה בוואטסאפ" data-wa>{WA_ICON}</a>
       <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-list" data-menu-btn>
         <span class="visually-hidden">תפריט</span>
@@ -694,6 +700,8 @@ def build_static_pages():
     <h2>רשימת התפוצה</h2>
     <p>מצטרפים לרשימת התפוצה רק בסימון מפורש של תיבת ההסכמה, ואחרי לחיצה על קישור האישור שנשלח למייל. נשמרים המייל, השם (אם מילאתם), ומועדי ההסכמה והאישור. נשלח אליכם מתכונים חדשים, עדכונים והצעות. אפשר להסיר את עצמכם בכל רגע, בקישור שבמייל או בפנייה אלינו.</p>
     <p>ייתכן שנשתמש בשירות דיוור חיצוני כדי לשלוח את המיילים. במקרה כזה יועברו אליו רק המייל והשם, ורק לצורך השליחה.</p>
+    <h2>כניסה עם Google</h2>
+    <p>אפשר להתחבר לאתר עם חשבון Google, בלי סיסמה. בכניסה אנחנו מקבלים מ־Google רק את השם, כתובת המייל ומזהה החשבון, ושומרים אותם כחשבון באתר. כך לא צריך להקליד שם ומייל בתגובות ובהרשמה לרשימת התפוצה. אנחנו לא מקבלים את הסיסמה שלכם, ולא ניגשים לשום מידע אחר בחשבון. אפשר לבקש למחוק את החשבון בכל רגע.</p>
     <h2>שימוש בפרטים</h2>
     <p>אנחנו משתמשים בפרטים רק למטרות שמפורטות כאן, ולא מוכרים או מעבירים אותם לאף גורם אחר.</p>
     <p>האתר שומר בדפדפן שלכם העדפה אחת בלבד: האם להפעיל אנימציות. היא נשארת במכשיר שלכם ואינה נשלחת אלינו.</p>

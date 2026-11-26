@@ -261,10 +261,12 @@ function hakef_talk_section( $post_id ) {
 		. '<p class="field"><label class="field__label" for="talk-text">התגובה</label>'
 		. '<textarea id="talk-text" name="comment" rows="5" maxlength="2000" required aria-describedby="talk-err"></textarea>'
 		. '<span class="error" id="talk-err">נא לכתוב את התגובה בעברית, בלי קישורים.</span></p>'
-		. '<div class="talk__fields">'
-		. '<p class="field"><label class="field__label" for="talk-name">שם</label><input id="talk-name" name="author" type="text" maxlength="60" autocomplete="name" required></p>'
-		. '<p class="field"><label class="field__label" for="talk-email">מייל <span class="opt">(לא יפורסם)</span></label><input id="talk-email" name="email" type="email" maxlength="100" autocomplete="email" dir="ltr" required></p>'
-		. '</div>'
+		. ( is_user_logged_in()
+			? '<p class="talk__as">מגיבים בתור <strong>' . esc_html( wp_get_current_user()->display_name ) . '</strong></p>'
+			: '<div class="talk__fields">'
+			. '<p class="field"><label class="field__label" for="talk-name">שם</label><input id="talk-name" name="author" type="text" maxlength="60" autocomplete="name" required></p>'
+			. '<p class="field"><label class="field__label" for="talk-email">מייל <span class="opt">(לא יפורסם)</span></label><input id="talk-email" name="email" type="email" maxlength="100" autocomplete="email" dir="ltr" required></p>'
+			. '</div>' )
 		. '<label class="consent"><input type="checkbox" name="hakef_news" value="1"><span>' . esc_html( HAKEF_CONSENT_TEXT ) . ' <span class="opt">(לא חובה)</span></span></label>'
 		. '<input type="hidden" name="comment_post_ID" value="' . (int) $post_id . '"><input type="hidden" name="comment_parent" value="0">'
 		. hakef_hidden_human_fields()
@@ -334,6 +336,11 @@ function hakef_sub_by_token( $t ) {
 /** בקשת הצטרפות: שומר כ"ממתין" ושולח מייל עם קישור אישור. מחזיר: check | already | invalid | error */
 function hakef_sub_request( $email, $name, $source, $post_id = 0 ) {
 	$email = strtolower( trim( sanitize_email( $email ) ) );
+	$verified = false;
+	if ( is_user_logged_in() ) {
+		$u        = wp_get_current_user();
+		$verified = strtolower( $u->user_email ) === $email && get_user_meta( $u->ID, 'hakef_google_sub', true );
+	}
 	if ( ! is_email( $email ) ) {
 		return 'invalid';
 	}
@@ -367,6 +374,13 @@ function hakef_sub_request( $email, $name, $source, $post_id = 0 ) {
 	update_post_meta( $id, '_hs_consent_ip', hakef_client_ip() );
 	update_post_meta( $id, '_hs_consent_text', HAKEF_CONSENT_TEXT );
 	update_post_meta( $id, '_hs_sent', time() );
+	if ( $verified ) {
+		update_post_meta( $id, '_hs_status', 'active' );
+		update_post_meta( $id, '_hs_confirmed_at', current_time( 'mysql' ) );
+		update_post_meta( $id, '_hs_confirm_ip', hakef_client_ip() );
+		update_post_meta( $id, '_hs_verified_by', 'google' );
+		return 'confirmed';
+	}
 	return hakef_sub_send_confirm( $id ) ? 'check' : 'error';
 }
 
@@ -509,8 +523,8 @@ function hakef_news_box( $back ) {
 	}
 	return $html . '<form class="news__form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" data-human>'
 		. '<input type="hidden" name="action" value="hakef_subscribe"><input type="hidden" name="back" value="' . esc_url( $back ) . '">'
-		. '<p class="field"><label class="field__label" for="news-name">שם <span class="opt">(לא חובה)</span></label><input id="news-name" name="name" type="text" maxlength="60" autocomplete="name"></p>'
-		. '<p class="field"><label class="field__label" for="news-email">מייל</label><input id="news-email" name="email" type="email" maxlength="100" autocomplete="email" dir="ltr" required></p>'
+		. '<p class="field"><label class="field__label" for="news-name">שם <span class="opt">(לא חובה)</span></label><input id="news-name" name="name" type="text" maxlength="60" autocomplete="name" value="' . esc_attr( is_user_logged_in() ? wp_get_current_user()->display_name : '' ) . '"></p>'
+		. '<p class="field"><label class="field__label" for="news-email">מייל</label><input id="news-email" name="email" type="email" maxlength="100" autocomplete="email" dir="ltr" required value="' . esc_attr( is_user_logged_in() ? wp_get_current_user()->user_email : '' ) . '"></p>'
 		. '<label class="consent"><input type="checkbox" name="consent" value="1" required><span>' . esc_html( HAKEF_CONSENT_TEXT ) . '</span></label>'
 		. hakef_hidden_human_fields()
 		. '<button class="btn btn--line" type="submit">הרשמה</button>'

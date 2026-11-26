@@ -453,6 +453,38 @@
   /* הדפסת מתכון */
   $$('[data-print]').forEach(function (b) { b.addEventListener('click', function () { window.print(); }); });
 
+  /* ---------- כניסה עם Google, ואזור ניהול למנהלים ----------
+     הבדיקה מול השרת נעשית רק כשיש עוגיית hakef_user, כלומר רק אצל מי שהתחבר. */
+  (function () {
+    var here = location.pathname + location.search.replace(/([?&])login=[^&]*&?/, '$1').replace(/[?&]$/, '');
+    $$('[data-login]').forEach(function (a) { a.href = '/wp-json/hakef/v1/google/start?r=' + encodeURIComponent(here); });
+    var msg = { ok: 'התחברתם בהצלחה.', cancel: 'הכניסה בוטלה.', error: 'לא הצלחנו להתחבר עם Google. נסו שוב.', expired: 'עבר יותר מדי זמן. נסו להתחבר שוב.', off: 'הכניסה עם Google עוד לא פעילה.' };
+    var m = location.search.match(/[?&]login=([a-z]+)/);
+    if (m && msg[m[1]]) {
+      var note = document.createElement('p');
+      note.className = 'login-note'; note.setAttribute('role', 'status'); note.textContent = msg[m[1]];
+      document.body.appendChild(note);
+      setTimeout(function () { note.remove(); }, 5000);
+      try { history.replaceState(null, '', here + location.hash); } catch (e) {}
+    }
+    if (!/(?:^|;\s*)hakef_user=1/.test(document.cookie)) return;
+    fetch('/wp-admin/admin-ajax.php?action=hakef_me', { credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (me) {
+        if (!me || !me.logged_in) return;
+        $$('[data-login]').forEach(function (a) {
+          a.href = me.logout;
+          a.textContent = a.closest('.nav-login') ? 'יציאה (' + me.first + ')' : 'יציאה';
+          a.title = 'מחוברים בתור ' + me.name;
+          a.removeAttribute('data-login');
+        });
+        if (me.manager) $$('[data-admin]').forEach(function (a) { a.href = me.admin_url; a.hidden = false; });
+        var rn = document.getElementById('r-name');
+        if (rn && !rn.value) rn.value = me.name;
+      })
+      .catch(function () {});
+  })();
+
   /* ---------- כלים לסוכני בינה מלאכותית בדפדפן (WebMCP) ----------
      סוכן שפועל בתוך הדפדפן יכול לקבל מהעמוד מחירים, הערכת כמויות ונוסח בקשה.
      שום כלי לא שולח הודעה: הלקוח שולח בעצמו. */

@@ -964,3 +964,23 @@ h1, h2, h3 { text-wrap: balance; }   /* בלי מילה יתומה בשורה ה
 .price-table td strong { color: var(--ink); }
 @media (max-width: 560px) { .price-table td { white-space: normal; } .price-table th, .price-table td { padding: 10px 12px; } }
 
+/* כניסה עם Google, ואזור ניהול למנהלים */
+.header-login { color: var(--ink-2); text-decoration: none; font-size: 0.95rem; white-space: nowrap; padding: 6px 4px; }
+.header-login:hover { color: var(--accent); }
+.header-admin { display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 999px; background: var(--surface-2);
+  border: 1px solid var(--line); color: var(--ink); text-decoration: none; font-weight: 600; font-size: 0.92rem; white-space: nowrap; }
+.header-admin[hidden] { display: none; }
+.header-admin:hover { border-color: var(--accent); color: var(--accent); }
+.nav-login { display: none; }
+@media (max-width: 900px) {
+  .header-login { display: none; }
+  .header-admin { height: 36px; padding: 0 12px; font-size: 0.85rem; }
+  .nav-open .main-nav .nav-login { display: block; }
+}
+.login-note { position: fixed; z-index: 60; top: calc(var(--header-h) + 10px); inset-inline: 0; margin: 0 auto; width: fit-content; max-width: calc(100% - 32px);
+  background: var(--surface-2); border: 1px solid var(--line); border-inline-start: 3px solid var(--blush); border-radius: 12px; padding: 10px 16px; color: var(--ink); }
+.talk__as { color: var(--ink-2); margin: 0 0 16px; }
+.talk__as strong { color: var(--ink); }
+
+/* מסך בינוני: בכותרת אין מקום לכל הכפתורים. "הצעת מחיר" יורד (יש כפתור ראשי בעמוד עצמו) */
+@media (min-width: 901px) and (max-width: 1120px) { .header-cta { display: none; } }
