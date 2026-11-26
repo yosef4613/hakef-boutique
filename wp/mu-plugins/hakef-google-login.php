@@ -50,6 +50,14 @@ add_action( 'rest_api_init', function () {
 	register_rest_route( 'hakef/v1', '/google/callback', array( 'methods' => 'GET', 'callback' => 'hakef_g_callback', 'permission_callback' => '__return_true' ) );
 } );
 
+/** רישום ניסיון כניסה: רק זמן וקוד סיבה, בלי מייל, שם או מפתחות. נשמרים 20 אחרונים. */
+function hakef_g_log( $code ) {
+	$log = get_option( 'hakef_g_log', array() );
+	$log = is_array( $log ) ? $log : array();
+	array_unshift( $log, array( 't' => current_time( 'mysql' ), 'c' => substr( sanitize_text_field( (string) $code ), 0, 80 ) ) );
+	update_option( 'hakef_g_log', array_slice( $log, 0, 20 ), false );
+}
+
 function hakef_g_back( $to, $msg = '' ) {
 	$to = wp_validate_redirect( $to, home_url( '/' ) );
 	if ( $msg ) {
@@ -98,9 +106,11 @@ function hakef_g_callback( WP_REST_Request $r ) {
 		$back = $st['r'];
 	}
 	if ( ! is_array( $st ) || empty( $st['s'] ) || ! hash_equals( (string) $st['s'], (string) $r->get_param( 'state' ) ) || time() - (int) $st['t'] > 600 ) {
+		hakef_g_log( ! $raw ? 'state: אין עוגייה' : ( ! is_array( $st ) ? 'state: חתימה' : ( time() - (int) $st['t'] > 600 ? 'state: פג תוקף' : 'state: לא תואם' ) ) );
 		hakef_g_back( $back, 'expired' );
 	}
 	if ( $r->get_param( 'error' ) || ! $r->get_param( 'code' ) || ! hakef_g_ready() ) {
+		hakef_g_log( 'google: ' . ( $r->get_param( 'error' ) ? (string) $r->get_param( 'error' ) : ( hakef_g_ready() ? 'אין קוד' : 'כבוי' ) ) );
 		hakef_g_back( $back, 'cancel' );
 	}
 	$s   = hakef_g_settings();
@@ -116,6 +126,7 @@ function hakef_g_callback( WP_REST_Request $r ) {
 	) );
 	$tok = is_wp_error( $res ) ? null : json_decode( wp_remote_retrieve_body( $res ), true );
 	if ( empty( $tok['id_token'] ) ) {
+		hakef_g_log( 'token: ' . ( is_wp_error( $res ) ? 'חיבור: ' . $res->get_error_code() : ( $tok['error'] ?? ( 'http ' . wp_remote_retrieve_response_code( $res ) ) ) ) );
 		hakef_g_back( $back, 'error' );
 	}
 	// האסימון הגיע ישירות מגוגל בחיבור מוצפן, אז מספיק לבדוק את התוכן שלו
@@ -123,10 +134,12 @@ function hakef_g_callback( WP_REST_Request $r ) {
 	$payload = isset( $parts[1] ) ? json_decode( base64_decode( strtr( $parts[1], '-_', '+/' ) ), true ) : null;
 	if ( ! is_array( $payload ) || ( $payload['aud'] ?? '' ) !== $s['client_id'] || ! in_array( $payload['iss'] ?? '', array( 'accounts.google.com', 'https://accounts.google.com' ), true )
 		|| (int) ( $payload['exp'] ?? 0 ) < time() || empty( $payload['email'] ) || true !== ( $payload['email_verified'] ?? false ) || empty( $payload['sub'] ) ) {
+		hakef_g_log( 'payload: ' . ( ! is_array( $payload ) ? 'לא נקרא' : ( ( $payload['aud'] ?? '' ) !== $s['client_id'] ? 'aud' : ( true !== ( $payload['email_verified'] ?? false ) ? 'מייל לא מאומת' : 'אחר' ) ) ) );
 		hakef_g_back( $back, 'error' );
 	}
 	$user = hakef_g_user_for( $payload );
 	if ( is_wp_error( $user ) ) {
+		hakef_g_log( 'user: ' . $user->get_error_code() );
 		hakef_g_back( $back, 'error' );
 	}
 	wp_set_current_user( $user->ID );
@@ -135,6 +148,7 @@ function hakef_g_callback( WP_REST_Request $r ) {
 	if ( hakef_g_is_manager( $user ) && false !== strpos( $back, '/wp-admin' ) ) {
 		hakef_g_back( $back );
 	}
+	hakef_g_log( 'ok' . ( hakef_g_is_manager( $user ) ? ' (מנהל)' : '' ) );
 	hakef_g_back( $back, 'ok' );
 }
 
@@ -274,5 +288,14 @@ function hakef_g_settings_page() {
 	submit_button( 'שמירה' );
 	echo '</form>';
 	$count = count( get_users( array( 'role' => 'subscriber', 'meta_key' => 'hakef_google_sub', 'fields' => 'ID' ) ) ); // phpcs:ignore WordPress.DB.SlowDBQuery
-	echo '<p>לקוחות שנכנסו עם Google עד עכשיו: <strong>' . (int) $count . '</strong> · <a href="' . esc_url( admin_url( 'users.php?role=subscriber' ) ) . '">לרשימת הלקוחות</a></p></div>';
+	echo '<p>לקוחות שנכנסו עם Google עד עכשיו: <strong>' . (int) $count . '</strong> · <a href="' . esc_url( admin_url( 'users.php?role=subscriber' ) ) . '">לרשימת הלקוחות</a></p>';
+	$log = get_option( 'hakef_g_log', array() );
+	if ( $log ) {
+		echo '<h2>ניסיונות כניסה אחרונים</h2><table class="widefat striped" style="max-width:640px"><thead><tr><th>מתי</th><th>תוצאה</th></tr></thead><tbody>';
+		foreach ( $log as $row ) {
+			echo '<tr><td>' . esc_html( $row['t'] ) . '</td><td dir="auto">' . esc_html( 0 === strpos( $row['c'], 'ok' ) ? 'הצליח' . substr( $row['c'], 2 ) : $row['c'] ) . '</td></tr>';
+		}
+		echo '</tbody></table>';
+	}
+	echo '</div>';
 }

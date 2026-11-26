@@ -474,10 +474,23 @@
         if (!me || !me.logged_in) return;
         $$('[data-login]').forEach(function (a) {
           a.href = me.logout;
-          a.textContent = a.closest('.nav-login') ? 'יציאה (' + me.first + ')' : 'יציאה';
+          if (a.closest('.nav-login')) {
+            a.textContent = 'יציאה (' + me.first + ')';
+          } else {
+            // בכותרת: "שלום, [שם]" ולידו "יציאה" קטן
+            var who = document.createElement('span'), nm = document.createElement('strong');
+            who.className = 'header-user'; who.title = me.name;
+            nm.textContent = me.first;
+            who.appendChild(document.createTextNode('שלום, ')); who.appendChild(nm);
+            a.parentNode.insertBefore(who, a);
+            a.textContent = 'יציאה';
+            a.classList.add('is-out');
+          }
           a.title = 'מחוברים בתור ' + me.name;
           a.removeAttribute('data-login');
         });
+        var hdr = document.querySelector('.site-header');
+        if (hdr) hdr.classList.add('is-signed');
         if (me.manager) $$('[data-admin]').forEach(function (a) { a.href = me.admin_url; a.hidden = false; });
         var rn = document.getElementById('r-name');
         if (rn && !rn.value) rn.value = me.name;

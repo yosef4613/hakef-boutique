@@ -967,6 +967,16 @@ h1, h2, h3 { text-wrap: balance; }   /* בלי מילה יתומה בשורה ה
 /* כניסה עם Google, ואזור ניהול למנהלים */
 .header-login { color: var(--ink-2); text-decoration: none; font-size: 0.95rem; white-space: nowrap; padding: 6px 4px; }
 .header-login:hover { color: var(--accent); }
+.header-user { display: inline-block; vertical-align: middle; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); font-size: 0.95rem; }
+.header-user strong { color: var(--ink); font-weight: 600; }
+.header-login.is-out { font-size: 0.85rem; color: var(--ink-3); }
+.header-login.is-out:hover { color: var(--accent); }
+@media (max-width: 900px) { .header-user { max-width: 92px; font-size: 0.85rem; } }
+@media (min-width: 901px) and (max-width: 1060px) { .header-user { max-width: 80px; } }
+@media (max-width: 400px) { .header-user { max-width: 66px; } }
+@media (max-width: 359px) { .header-user { display: none; } }
+/* מחוברים: השם (ואצל מנהלים גם "אזור ניהול") תופסים מקום, אז תת־הכותרת שליד הלוגו יורדת */
+.site-header.is-signed .brand__text small { display: none; }
 .header-admin { display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 999px; background: var(--surface-2);
   border: 1px solid var(--line); color: var(--ink); text-decoration: none; font-weight: 600; font-size: 0.92rem; white-space: nowrap; }
 .header-admin[hidden] { display: none; }

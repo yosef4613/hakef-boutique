@@ -53,7 +53,7 @@
   <a class="btn btn--primary" href="/#plan" data-order="bar" tabindex="-1">קבלו הצעת מחיר <span aria-hidden="true">←</span></a>
 </div>
 
-<script src="/assets/js/site.js?v=42de20a5" defer></script>
+<script src="/assets/js/site.js?v=83aa5d7e" defer></script>
 <?php wp_footer(); ?>
 </body>
 </html>
